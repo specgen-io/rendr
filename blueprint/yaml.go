@@ -70,15 +70,6 @@ func yamlError(node *yaml.Node, message string) error {
 	return errors.New(fmt.Sprintf("yaml: line %d: %s", node.Line, message))
 }
 
-func contains(values []string, node *yaml.Node) bool {
-	for _, v := range values {
-		if node.Value == v {
-			return true
-		}
-	}
-	return false
-}
-
 var decodeStrict = yaml.NewDecodeOptions().KnownFields(true)
 
 var decodeLooze = yaml.NewDecodeOptions().KnownFields(false)

@@ -1,0 +1,66 @@
+package blueprint
+
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
+
+func OverrideValues(args Args, values, overrides ArgsValues) (ArgsValues, error) {
+	rootArg := Map("", "", nil, args)
+	value, err := OverrideValue([]string{}, &rootArg, values, overrides)
+	if err != nil {
+		return nil, err
+	}
+	return value.(ArgsValues), nil
+}
+
+func OverrideValue(path []string, arg *NamedArg, value, override ArgValue) (ArgValue, error) {
+	if arg.String != nil {
+		stringValue, isString := override.(string)
+		if !isString {
+			return nil, errors.New(fmt.Sprintf(`argument "%s" should be string`, strings.Join(path, ".")))
+		}
+		return stringValue, nil
+	}
+	if arg.Array != nil {
+		arrayValues, isArray := override.([]interface{})
+		if !isArray {
+			return nil, errors.New(fmt.Sprintf(`argument "%s" should be array`, strings.Join(path, ".")))
+		}
+		values := make([]string, len(arrayValues))
+		for index := range arrayValues {
+			values[index] = arrayValues[index].(string)
+		}
+		return values, nil
+	}
+	if arg.Map != nil {
+		mapOverrides, isMap := override.(ArgsValues)
+		if !isMap {
+			return nil, errors.New(fmt.Sprintf(`argument "%s" should be map`, strings.Join(path, ".")))
+		}
+		mapValues, isMap := value.(ArgsValues)
+		if !isMap {
+			return nil, errors.New(fmt.Sprintf(`argument "%s" should be map`, strings.Join(path, ".")))
+		}
+
+		for nestedArgName, nestedOverrideValue := range mapOverrides {
+			nestedArg := arg.Map.Keys.FindByName(nestedArgName)
+			if nestedArg == nil {
+				return nil, errors.New(``)
+			}
+			nestedPath := append(path, nestedArg.Name)
+			nestedValue, found := mapValues[nestedArgName]
+			if !found {
+				nestedValue = ArgsValues{}
+			}
+			newValue, err := OverrideValue(nestedPath, nestedArg, nestedValue, nestedOverrideValue)
+			if err != nil {
+				return nil, err
+			}
+			mapValues[nestedArgName] = newValue
+		}
+		return mapValues, nil
+	}
+	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
+}

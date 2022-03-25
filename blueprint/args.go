@@ -7,6 +7,15 @@ import (
 
 type Args []NamedArg
 
+func (args Args) FindByName(name string) *NamedArg {
+	for index := range args {
+		if args[index].Name == name {
+			return &args[index]
+		}
+	}
+	return nil
+}
+
 func (value *Args) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "models should be YAML mapping")

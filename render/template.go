@@ -67,6 +67,8 @@ func (t Template) Render(outPath string, allowInput bool, valuesJsonData []byte,
 		return nil, err
 	}
 
+	argsValues = blueprint.EnrichValues(theBlueprint.Args, argsValues)
+
 	staticResults, err := renderFiles(staticFiles, outPath, argsValues, true)
 	if err != nil {
 		return nil, err
