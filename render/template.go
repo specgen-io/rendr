@@ -33,6 +33,9 @@ func (t Template) Render(outPath string, allowInput bool, valuesJsonData []byte,
 	}
 
 	argsValues, err := t.GetArgsValues(blueprint.Args, allowInput, valuesJsonData, overridesKeysValues)
+	if err != nil {
+		return nil, err
+	}
 
 	result := []files.Text{}
 
