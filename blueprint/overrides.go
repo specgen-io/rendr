@@ -43,6 +43,9 @@ func OverrideValue(path []string, arg *NamedArg, value, override ArgValue) (ArgV
 		if !isMap {
 			return nil, errors.New(fmt.Sprintf(`argument "%s" should be map`, strings.Join(path, ".")))
 		}
+		if mapValues == nil {
+			mapValues = ArgsValues{}
+		}
 
 		for nestedArgName, nestedOverrideValue := range mapOverrides {
 			nestedArg := arg.Map.Keys.FindByName(nestedArgName)
@@ -50,10 +53,7 @@ func OverrideValue(path []string, arg *NamedArg, value, override ArgValue) (ArgV
 				return nil, errors.New(``)
 			}
 			nestedPath := append(path, nestedArg.Name)
-			nestedValue, found := mapValues[nestedArgName]
-			if !found {
-				nestedValue = ArgsValues{}
-			}
+			nestedValue := mapValues[nestedArgName]
 			newValue, err := OverrideValue(nestedPath, nestedArg, nestedValue, nestedOverrideValue)
 			if err != nil {
 				return nil, err
