@@ -29,7 +29,7 @@ func main() {
 
 	template := render.Template{args.TemplateUrl, args.Path, args.BlueprintPath}
 	renderedFiles, err := template.Render(args.OutPath, !args.NoInput, valuesJsonData, args.Overrides)
-	failIfError(err, `Failed to render template`)
+	failIfError(err, `Failed to render`)
 
 	err = files.WriteAll(renderedFiles, true)
 	failIfError(err, `Failed to write rendered files`)

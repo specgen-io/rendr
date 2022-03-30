@@ -22,6 +22,7 @@ type Blueprint struct {
 	Blueprint   string          `yaml:"blueprint"`
 	Name        string          `yaml:"name"`
 	Title       string          `yaml:"title"`
+	Roots       []string        `yaml:"roots"`
 	Args        Args            `yaml:"args"`
 	IgnorePaths PathPrefixArray `yaml:"ignore"`
 	StaticPaths PathPrefixArray `yaml:"static"`

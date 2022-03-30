@@ -1,7 +1,7 @@
 package render
 
 import (
-	"github.com/cbroglie/mustache"
+	"fmt"
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-billy/v5/osfs"
@@ -10,7 +10,6 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/specgen-io/rendr/blueprint"
 	"github.com/specgen-io/rendr/files"
-	"github.com/specgen-io/rendr/input"
 	"io/fs"
 	"path"
 	"strings"
@@ -28,73 +27,99 @@ func (t Template) Render(outPath string, allowInput bool, valuesJsonData []byte,
 		return nil, err
 	}
 
-	theBlueprint, err := t.loadBlueprint(filesystem)
+	blueprint, err := t.LoadBlueprint(filesystem)
 	if err != nil {
 		return nil, err
 	}
 
-	staticFiles, templateFiles, err := t.load(filesystem, theBlueprint)
-	if err != nil {
-		return nil, err
-	}
+	argsValues, err := t.GetArgsValues(blueprint.Args, allowInput, valuesJsonData, overridesKeysValues)
 
-	argsValues := blueprint.ArgsValues{}
+	result := []files.Text{}
 
-	if valuesJsonData != nil {
-		argsValues, err = blueprint.ReadValuesJson(theBlueprint.Args, valuesJsonData)
+	for _, root := range blueprint.Roots {
+		rootFiles, err := t.RenderRoot(filesystem, root, blueprint, argsValues, outPath)
 		if err != nil {
 			return nil, err
 		}
+		result = append(result, rootFiles...)
 	}
 
-	if overridesKeysValues != nil {
-		overridesValues, err := blueprint.ParseValues(theBlueprint.Args, overridesKeysValues)
-		if err != nil {
-			return nil, err
-		}
-		argsValues, err = blueprint.OverrideValues(theBlueprint.Args, argsValues, overridesValues)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	argsInput := input.NoInput
-	if allowInput {
-		argsInput = input.Survey
-	}
-	argsValues, err = blueprint.GetValues(theBlueprint.Args, true, argsValues, argsInput)
-	if err != nil {
-		return nil, err
-	}
-
-	argsValues = blueprint.EnrichValues(theBlueprint.Args, argsValues)
-
-	staticResults, err := renderFiles(staticFiles, outPath, argsValues, true)
-	if err != nil {
-		return nil, err
-	}
-
-	renderedResults, err := renderFiles(templateFiles, outPath, argsValues, false)
-	if err != nil {
-		return nil, err
-	}
-
-	return append(staticResults, renderedResults...), err
+	return result, err
 }
 
-func renderFiles(templateFiles []files.Text, outPath string, argsValues blueprint.ArgsValues, isStaticFile bool) ([]files.Text, error) {
+func (t Template) RenderRoot(
+	filesystem billy.Filesystem,
+	root string,
+	blueprint *blueprint.Blueprint,
+	argsValues blueprint.ArgsValues,
+	outPath string) ([]files.Text, error) {
+
+	result := []files.Text{}
+
+	staticFiles, err := t.getFiles(filesystem, root, blueprint.StaticPaths, blueprint.IgnorePaths)
+	if err != nil {
+		return nil, err
+	}
+
+	templateFiles, err := t.getFiles(filesystem, root, nil, blueprint.IgnorePaths)
+	if err != nil {
+		return nil, err
+	}
+
+	staticResults, err := renderStaticFiles(staticFiles, outPath)
+	if err != nil {
+		return nil, err
+	}
+	result = append(result, staticResults...)
+
+	renderedResults, err := renderFiles(templateFiles, outPath, argsValues)
+	if err != nil {
+		return nil, err
+	}
+	result = append(result, renderedResults...)
+
+	return result, nil
+}
+
+func renderFiles(templateFiles []files.Text, outPath string, argsValues blueprint.ArgsValues) ([]files.Text, error) {
 	result := []files.Text{}
 	for _, templateFile := range templateFiles {
-		content := templateFile.Content
-		if !isStaticFile {
-			mustache.AllowMissingVariables = false
-			renderedContent, err := mustache.Render(content, argsValues)
-			if err != nil {
-				return nil, err
-			}
-			content = renderedContent
+		renderedFile, err := renderFile(&templateFile, outPath, argsValues)
+		if err != nil {
+			return nil, fmt.Errorf(`template "%s" returned error: %s`, templateFile.Path, err.Error())
 		}
-		result = append(result, files.Text{path.Join(outPath, templateFile.Path), content})
+		if renderedFile != nil {
+			result = append(result, *renderedFile)
+		}
+	}
+	return result, nil
+}
+
+func renderFile(templateFile *files.Text, outPath string, argsValues blueprint.ArgsValues) (*files.Text, error) {
+	templatePath := templateFile.Path
+
+	renderedPath, err := renderPath(templatePath, argsValues)
+	if err != nil {
+		return nil, err
+	}
+
+	if renderedPath == nil {
+		return nil, nil
+	}
+
+	content, err := render(templateFile.Content, argsValues)
+	if err != nil {
+		return nil, err
+	}
+
+	return &files.Text{path.Join(outPath, *renderedPath), content}, nil
+}
+
+func renderStaticFiles(staticFiles []files.Text, outPath string) ([]files.Text, error) {
+	result := []files.Text{}
+	for _, theFile := range staticFiles {
+		content := theFile.Content
+		result = append(result, files.Text{path.Join(outPath, theFile.Path), content})
 	}
 	return result, nil
 }
@@ -113,26 +138,32 @@ func getFilesystem(repoUrl string) (billy.Filesystem, error) {
 	}
 }
 
-func (t Template) loadBlueprint(filesystem billy.Filesystem) (*blueprint.Blueprint, error) {
+func (t Template) LoadBlueprint(filesystem billy.Filesystem) (*blueprint.Blueprint, error) {
 	blueprintFullpath := path.Join(t.Path, t.BlueprintPath)
 	data, err := util.ReadFile(filesystem, blueprintFullpath)
 	if err != nil {
 		return nil, err
 	}
-	theBlueprint, err := blueprint.Read(string(data))
+	result, err := blueprint.Read(string(data))
 	if err != nil {
 		return nil, err
 	}
-	theBlueprint.IgnorePaths = append(theBlueprint.IgnorePaths, t.BlueprintPath)
-	return theBlueprint, nil
+	result.IgnorePaths = append(result.IgnorePaths, t.BlueprintPath)
+	if result == nil || len(result.Roots) == 0 {
+		result.Roots = []string{"."}
+	}
+	if result.StaticPaths == nil {
+		result.StaticPaths = blueprint.PathPrefixArray{}
+	}
+	return result, nil
 }
 
-func (t Template) load(filesystem billy.Filesystem, blueprint *blueprint.Blueprint) ([]files.Text, []files.Text, error) {
-	templateFiles := []files.Text{}
-	staticFiles := []files.Text{}
-	err := Walk(filesystem, t.Path, func(itempath string, info fs.FileInfo, err error) error {
-		filepath := strings.TrimPrefix(strings.TrimPrefix(itempath, t.Path), "/")
-		if blueprint.IgnorePaths.Matches(filepath) {
+func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, includeOnlyPrefixes blueprint.PathPrefixArray, excludePrefixes blueprint.PathPrefixArray) ([]files.Text, error) {
+	result := []files.Text{}
+	rootFullPath := path.Join(t.Path, rootPath)
+	err := Walk(filesystem, rootFullPath, func(itempath string, info fs.FileInfo, err error) error {
+		filepath := strings.TrimPrefix(strings.TrimPrefix(itempath, rootFullPath), "/")
+		if excludePrefixes.Matches(filepath) {
 			return nil
 		}
 		if !info.IsDir() {
@@ -141,18 +172,14 @@ func (t Template) load(filesystem billy.Filesystem, blueprint *blueprint.Bluepri
 				return nil
 			}
 			file := files.Text{filepath, string(data)}
-			if blueprint.StaticPaths.Matches(filepath) {
-				staticFiles = append(staticFiles, file)
-			} else {
-				templateFiles = append(templateFiles, file)
+			if includeOnlyPrefixes == nil || includeOnlyPrefixes.Matches(filepath) {
+				result = append(result, file)
 			}
 		}
 		return nil
 	})
-
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-
-	return staticFiles, templateFiles, nil
+	return result, nil
 }
