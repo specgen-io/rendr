@@ -18,6 +18,16 @@ var casesOverrideValues = []OverrideValuesTestCase{
 		ArgsValues{"param1": "the value", "param2": "the override"},
 	},
 	{
+		"boolean arg",
+		Args{
+			Bool("param1", "", nil),
+			Bool("param2", "", BoolPtr(false)),
+		},
+		ArgsValues{"param1": false, "param2": false},
+		ArgsValues{"param2": true},
+		ArgsValues{"param1": false, "param2": true},
+	},
+	{
 		"string arg new",
 		Args{
 			String("param1", "", nil, nil),

@@ -64,6 +64,7 @@ type NamedArg struct {
 }
 
 type Arg struct {
+	Bool   *ArgBool
 	String *ArgString
 	Array  *ArgArray
 	Map    *ArgMap
@@ -94,6 +95,14 @@ func (value *Arg) UnmarshalYAML(node *yaml.Node) error {
 		}
 		arg.String = &argString
 		break
+	case `boolean`:
+		argBool := ArgBool{}
+		err := node.DecodeWith(decodeLooze, &argBool)
+		if err != nil {
+			return err
+		}
+		arg.Bool = &argBool
+		break
 	case `array`:
 		argArray := ArgArray{}
 		err := node.DecodeWith(decodeLooze, &argArray)
@@ -122,6 +131,9 @@ func (arg *NamedArg) Type() ArgType {
 	if arg.String != nil {
 		return ArgTypeString
 	}
+	if arg.Bool != nil {
+		return ArgTypeBoolean
+	}
 	if arg.Array != nil {
 		return ArgTypeArray
 	}
@@ -134,15 +146,22 @@ func (arg *NamedArg) Type() ArgType {
 type ArgType string
 
 const (
-	ArgTypeString ArgType = "string"
-	ArgTypeArray  ArgType = "array"
-	ArgTypeMap    ArgType = "map"
+	ArgTypeString  ArgType = "string"
+	ArgTypeBoolean ArgType = "boolean"
+	ArgTypeArray   ArgType = "array"
+	ArgTypeMap     ArgType = "map"
 )
 
-func (arg Arg) Default() ArgValue {
+func (arg NamedArg) Default() ArgValue {
 	if arg.String != nil {
 		if arg.String.Default != nil {
 			return *arg.String.Default
+		}
+		return nil
+	}
+	if arg.Bool != nil {
+		if arg.Bool.Default != nil {
+			return *arg.Bool.Default
 		}
 		return nil
 	}
@@ -152,7 +171,10 @@ func (arg Arg) Default() ArgValue {
 		}
 		return nil
 	}
-	return nil
+	if arg.Map != nil {
+		return nil
+	}
+	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
 }
 
 type ArgString struct {
@@ -167,6 +189,11 @@ type ArgArray struct {
 	Default     []string `yaml:"default"`
 }
 
+type ArgBool struct {
+	Description string `yaml:"description"`
+	Default     *bool  `yaml:"default"`
+}
+
 type ArgMap struct {
 	Description string     `yaml:"description"`
 	Default     ArgsValues `yaml:"default"`
@@ -178,6 +205,15 @@ func String(name string, description string, values []string, defaultValue *stri
 		Name: name,
 		Arg: Arg{
 			String: &ArgString{description, values, defaultValue},
+		},
+	}
+}
+
+func Bool(name string, description string, defaultValue *bool) NamedArg {
+	return NamedArg{
+		Name: name,
+		Arg: Arg{
+			Bool: &ArgBool{description, defaultValue},
 		},
 	}
 }

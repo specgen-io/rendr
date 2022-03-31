@@ -11,10 +11,28 @@ func Survey(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
 	if arg.String != nil {
 		return getString(arg)
 	}
+	if arg.Bool != nil {
+		return getBool(arg)
+	}
 	if arg.Array != nil {
 		return getArray(arg)
 	}
 	return nil, errors.New(fmt.Sprintf(`unknown kind of argument "%s"`, arg.Name))
+}
+
+func getBool(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
+	defaultValue := true
+	if arg.Bool.Default != nil {
+		defaultValue = *arg.Bool.Default
+	}
+	message := fmt.Sprintf(`%s:`, arg.Bool.Description)
+	value := false
+	prompt := &survey.Confirm{
+		Message: message,
+		Default: defaultValue,
+	}
+	err := survey.AskOne(prompt, &value)
+	return value, err
 }
 
 func getString(arg blueprint.NamedArg) (blueprint.ArgValue, error) {

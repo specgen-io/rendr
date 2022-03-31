@@ -20,6 +20,16 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 		ArgsValues{"param1": "value1", "param2": "value2"},
 	},
 	{
+		"flat boolean args",
+		Args{
+			Bool("param1", "", nil),
+			Bool("param2", "", BoolPtr(true)),
+		},
+		`{"param1":true,"param2":false}`,
+		nil,
+		ArgsValues{"param1": true, "param2": false},
+	},
+	{
 		"flat string arg wrong value",
 		Args{
 			String("param", "", nil, nil),

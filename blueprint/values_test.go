@@ -18,6 +18,16 @@ var casesGetValues = []GetValuesTestCase{
 		ArgsValues{"param1": "the value", "param2": "the default"},
 	},
 	{
+		"bool args",
+		Args{
+			Bool("param1", "", nil),
+			Bool("param2", "", BoolPtr(false)),
+		},
+		false,
+		HardcodedGetter(true),
+		ArgsValues{"param1": true, "param2": false},
+	},
+	{
 		"string args should get",
 		Args{
 			String("param1", "", nil, nil),

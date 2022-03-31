@@ -19,6 +19,16 @@ var casesParseValues = []ParseValuesTestCase{
 		ArgsValues{"param1": "value1", "param2": "value2"},
 	},
 	{
+		"flat bool args",
+		Args{
+			Bool("param1", "", nil),
+			Bool("param2", "", BoolPtr(false)),
+		},
+		[]string{"param1=yes", "param2=true"},
+		nil,
+		ArgsValues{"param1": true, "param2": true},
+	},
+	{
 		"non existing arg",
 		Args{
 			String("param1", "", nil, nil),

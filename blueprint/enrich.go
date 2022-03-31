@@ -15,6 +15,10 @@ func EnrichValue(arg *NamedArg, value interface{}) interface{} {
 		stringValue, _ := value.(string)
 		return packStringValue(arg.String.Values, stringValue)
 	}
+	if arg.Bool != nil {
+		boolValue, _ := value.(bool)
+		return packBoolValue(boolValue)
+	}
 	if arg.Array != nil {
 		arrayValues, _ := value.([]string)
 		return packStringArrayValue(arg.Array.Values, arrayValues)
@@ -30,6 +34,11 @@ func EnrichValue(arg *NamedArg, value interface{}) interface{} {
 		return values
 	}
 	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
+}
+
+func packBoolValue(boolValue bool) map[string]interface{} {
+	valueObj := map[string]interface{}{"value": boolValue}
+	return valueObj
 }
 
 func packStringValue(possibleValues []string, stringValue string) map[string]interface{} {

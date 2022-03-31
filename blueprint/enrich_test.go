@@ -17,6 +17,16 @@ var enrichValues = []EnrichTestCase{
 		},
 	},
 	{
+		"boolean arg",
+		Args{
+			Bool("param", "", nil),
+		},
+		ArgsValues{"param": true},
+		ArgsValues{
+			"param": map[string]interface{}{"value": true},
+		},
+	},
+	{
 		"string with values arg",
 		Args{
 			String("param", "", []string{"value1", "value2"}, nil),

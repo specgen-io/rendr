@@ -27,6 +27,20 @@ default: the value 1
 		},
 	},
 	{
+		"bool arg",
+		`
+type: boolean
+description: the description
+default: yes
+`,
+		Arg{
+			Bool: &ArgBool{
+				"the description",
+				BoolPtr(true),
+			},
+		},
+	},
+	{
 		"array arg",
 		`
 type: array
@@ -71,7 +85,7 @@ keys:
 
 var casesArgsUnmarshal = []ArgsUnmarshalTestCase{
 	{
-		"two args",
+		"three args",
 		`
 the_arg_1:
   type: string
@@ -81,6 +95,10 @@ the_arg_1:
     - the value 2
   default: the value 1
 the_arg_2:
+  type: boolean
+  description: the description
+  default: yes
+the_arg_3:
   type: array
   description: the description
   values:
@@ -92,26 +110,9 @@ the_arg_2:
     - the value 2
 `,
 		Args{
-			{
-				Name: "the_arg_1",
-				Arg: Arg{
-					String: &ArgString{
-						"the description",
-						[]string{"the value 1", "the value 2"},
-						StrPtr("the value 1"),
-					},
-				},
-			},
-			{
-				Name: "the_arg_2",
-				Arg: Arg{
-					Array: &ArgArray{
-						"the description",
-						[]string{"the value 1", "the value 2", "the value 3"},
-						[]string{"the value 1", "the value 2"},
-					},
-				},
-			},
+			String("the_arg_1", "the description", []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
+			Bool("the_arg_2", "the description", BoolPtr(true)),
+			Array("the_arg_3", "the description", []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
 		},
 	},
 }
@@ -120,7 +121,10 @@ func Test_ArgUnmarshal(t *testing.T) {
 	for _, testcase := range casesArgUnmarshal {
 		t.Logf(`Running test case: %s`, testcase.Name)
 		arg := Arg{}
-		yaml.Unmarshal([]byte(strings.TrimSpace(testcase.Yaml)), &arg)
+		err := yaml.Unmarshal([]byte(strings.TrimSpace(testcase.Yaml)), &arg)
+		if err != nil {
+			t.Fatalf(`unmarshaling failes: %s`, err.Error())
+		}
 		if !cmp.Equal(testcase.Expected, arg) {
 			t.Errorf("Failed, values do not match\nexpected: %v\nactual:   %v", testcase.Expected, arg)
 		}
@@ -137,7 +141,10 @@ func Test_ArgsUnmarshal(t *testing.T) {
 	for _, testcase := range casesArgsUnmarshal {
 		t.Logf(`Running test case: %s`, testcase.Name)
 		args := Args{}
-		yaml.Unmarshal([]byte(strings.TrimSpace(testcase.Yaml)), &args)
+		err := yaml.Unmarshal([]byte(strings.TrimSpace(testcase.Yaml)), &args)
+		if err != nil {
+			t.Fatalf(`unmarshaling failes: %s`, err.Error())
+		}
 		if !cmp.Equal(testcase.Expected, args) {
 			t.Errorf("Failed, values do not match\nexpected: %v\nactual:   %v", testcase.Expected, args)
 		}

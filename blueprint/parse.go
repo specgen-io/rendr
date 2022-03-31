@@ -3,6 +3,7 @@ package blueprint
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -43,6 +44,13 @@ func setValue(arg *NamedArg, argsValues ArgsValues, path []string, argValue stri
 			if arg.String != nil {
 				currentValues[argName] = argValue
 			}
+			if arg.Bool != nil {
+				boolValue, err := parseBoolean(argValue)
+				if err != nil {
+					return err
+				}
+				currentValues[argName] = boolValue
+			}
 			return nil
 		} else {
 			newCurrentValues, found := currentValues[argName]
@@ -52,6 +60,30 @@ func setValue(arg *NamedArg, argsValues ArgsValues, path []string, argValue stri
 			}
 			currentValues = newCurrentValues.(ArgsValues)
 		}
+	}
+	return nil
+}
+
+func parseBoolean(value string) (bool, error) {
+	yesNoValue := parseYesNo(value)
+	if yesNoValue != nil {
+		return *yesNoValue, nil
+	} else {
+		parsedValue, err := strconv.ParseBool(value)
+		if err != nil {
+			return false, err
+		}
+		return parsedValue, nil
+	}
+}
+
+func parseYesNo(value string) *bool {
+	lowerValue := strings.ToLower(value)
+	if lowerValue == "yes" || lowerValue == "y" {
+		return BoolPtr(true)
+	}
+	if lowerValue == "no" || lowerValue == "n" {
+		return BoolPtr(false)
 	}
 	return nil
 }

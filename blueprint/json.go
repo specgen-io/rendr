@@ -24,6 +24,13 @@ func ValidateValue(path []string, arg *NamedArg, value interface{}) (interface{}
 		}
 		return stringValue, nil
 	}
+	if arg.Bool != nil {
+		boolValue, isBool := value.(bool)
+		if !isBool {
+			return nil, errors.New(fmt.Sprintf(`argument "%s" should be boolean`, strings.Join(path, ".")))
+		}
+		return boolValue, nil
+	}
 	if arg.Array != nil {
 		arrayValues, isArray := value.([]interface{})
 		if !isArray {
