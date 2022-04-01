@@ -64,31 +64,17 @@ func (t Template) RenderRoot(
 	argsValues blueprint.ArgsValues,
 	outPath string) ([]TextFile, error) {
 
-	result := []TextFile{}
-
-	staticFiles, err := t.getFiles(filesystem, root, blueprint.StaticPaths, blueprint.IgnorePaths)
+	templateFiles, err := t.getFiles(filesystem, root, blueprint.IgnorePaths)
 	if err != nil {
 		return nil, err
 	}
 
-	templateFiles, err := t.getFiles(filesystem, root, nil, blueprint.IgnorePaths)
+	renderedFiles, err := renderFiles(templateFiles, outPath, argsValues)
 	if err != nil {
 		return nil, err
 	}
 
-	staticResults, err := renderStaticFiles(staticFiles, outPath)
-	if err != nil {
-		return nil, err
-	}
-	result = append(result, staticResults...)
-
-	renderedResults, err := renderFiles(templateFiles, outPath, argsValues)
-	if err != nil {
-		return nil, err
-	}
-	result = append(result, renderedResults...)
-
-	return result, nil
+	return renderedFiles, nil
 }
 
 func renderFiles(templateFiles []TextFile, outPath string, argsValues blueprint.ArgsValues) ([]TextFile, error) {
@@ -125,15 +111,6 @@ func renderFile(templateFile *TextFile, outPath string, argsValues blueprint.Arg
 	return &TextFile{path.Join(outPath, *renderedPath), content}, nil
 }
 
-func renderStaticFiles(staticFiles []TextFile, outPath string) ([]TextFile, error) {
-	result := []TextFile{}
-	for _, theFile := range staticFiles {
-		content := theFile.Content
-		result = append(result, TextFile{path.Join(outPath, theFile.Path), content})
-	}
-	return result, nil
-}
-
 func getFilesystem(repoUrl string) (billy.Filesystem, error) {
 	if strings.HasPrefix(repoUrl, "file:///") {
 		repoPath := strings.TrimPrefix(repoUrl, "file:///")
@@ -162,13 +139,10 @@ func (t Template) LoadBlueprint(filesystem billy.Filesystem) (*blueprint.Bluepri
 	if result == nil || len(result.Roots) == 0 {
 		result.Roots = []string{"."}
 	}
-	if result.StaticPaths == nil {
-		result.StaticPaths = blueprint.PathPrefixArray{}
-	}
 	return result, nil
 }
 
-func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, includeOnlyPrefixes blueprint.PathPrefixArray, excludePrefixes blueprint.PathPrefixArray) ([]TextFile, error) {
+func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, excludePrefixes blueprint.PathPrefixArray) ([]TextFile, error) {
 	result := []TextFile{}
 	rootFullPath := path.Join(t.Path, rootPath)
 	err := Walk(filesystem, rootFullPath, func(itempath string, info fs.FileInfo, err error) error {
@@ -182,9 +156,7 @@ func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, include
 				return nil
 			}
 			file := TextFile{filepath, string(data)}
-			if includeOnlyPrefixes == nil || includeOnlyPrefixes.Matches(filepath) {
-				result = append(result, file)
-			}
+			result = append(result, file)
 		}
 		return nil
 	})

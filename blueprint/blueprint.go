@@ -25,7 +25,6 @@ type Blueprint struct {
 	Roots       []string        `yaml:"roots"`
 	Args        Args            `yaml:"args"`
 	IgnorePaths PathPrefixArray `yaml:"ignore"`
-	StaticPaths PathPrefixArray `yaml:"static"`
 }
 
 func Read(blueprintContent string) (*Blueprint, error) {
