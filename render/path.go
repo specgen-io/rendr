@@ -53,14 +53,12 @@ func renderPathItem(template string, argsValues blueprint.ArgsValues) (*string, 
 			result = ""
 		}
 		return &result, nil
-	} else if strings.HasPrefix(template, "{{") {
+	} else {
 		result, err := render(template, argsValues)
 		if err != nil {
 			return nil, err
 		}
 		return &result, nil
-	} else {
-		return &template, nil
 	}
 }
 
