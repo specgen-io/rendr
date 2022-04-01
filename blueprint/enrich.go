@@ -5,7 +5,7 @@ import (
 )
 
 func EnrichValues(args Args, values ArgsValues) ArgsValues {
-	rootArg := Map("", "", nil, args)
+	rootArg := Map("", "", false, nil, args)
 	value := EnrichValue(&rootArg, values)
 	return value.(ArgsValues)
 }

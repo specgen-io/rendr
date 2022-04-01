@@ -28,7 +28,7 @@ func main() {
 	}
 
 	template := render.Template{args.TemplateUrl, args.Path, args.BlueprintPath}
-	renderedFiles, err := template.Render(args.OutPath, !args.NoInput, valuesJsonData, args.Overrides)
+	renderedFiles, err := template.Render(args.OutPath, args.NoInput, args.ForceInput, valuesJsonData, args.Overrides)
 	failIfError(err, `Failed to render`)
 
 	err = files.WriteAll(renderedFiles, true)
@@ -62,6 +62,7 @@ type Arguments struct {
 	Overrides      []string
 	OutPath        string
 	NoInput        bool
+	ForceInput     bool
 }
 
 func parseArguments() Arguments {
@@ -70,7 +71,8 @@ func parseArguments() Arguments {
 	valuesJsonPath := flag.String("values", "", `Path to arguments values JSON file.`)
 	outPath := flag.String("out", ".", `Path to output rendered template.`)
 	blueprintPath := flag.String("blueprint", "blueprint.yaml", `Path to blueprint file inside of template.`)
-	noinput := flag.Bool("noinput", false, `Do not request user for missing arguments values.`)
+	noinput := flag.Bool("noinput", false, `Do not request user input for missing arguments values.`)
+	forceinput := flag.Bool("forceinput", false, `Force user input requests even for noinput arguments.`)
 
 	flag.Usage = func() {
 		w := flag.CommandLine.Output()
@@ -120,5 +122,6 @@ func parseArguments() Arguments {
 		overrides,
 		*outPath,
 		*noinput,
+		*forceinput,
 	}
 }

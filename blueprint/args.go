@@ -177,61 +177,81 @@ func (arg NamedArg) Default() ArgValue {
 	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
 }
 
+func (arg NamedArg) NoInput() bool {
+	if arg.String != nil {
+		return arg.String.NoInput
+	}
+	if arg.Bool != nil {
+		return arg.Bool.NoInput
+	}
+	if arg.Array != nil {
+		return arg.Array.NoInput
+	}
+	if arg.Map != nil {
+		return false
+	}
+	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
+}
+
 type ArgString struct {
 	Description string   `yaml:"description"`
+	NoInput     bool     `yaml:"noinput"`
 	Values      []string `yaml:"values"`
 	Default     *string  `yaml:"default"`
 }
 
 type ArgArray struct {
 	Description string   `yaml:"description"`
+	NoInput     bool     `yaml:"noinput"`
 	Values      []string `yaml:"values"`
 	Default     []string `yaml:"default"`
 }
 
 type ArgBool struct {
 	Description string `yaml:"description"`
+	NoInput     bool   `yaml:"noinput"`
 	Default     *bool  `yaml:"default"`
 }
 
 type ArgMap struct {
 	Description string     `yaml:"description"`
+	NoInput     bool       `yaml:"noinput"`
 	Default     ArgsValues `yaml:"default"`
 	Keys        Args       `yaml:"keys"`
 }
 
-func String(name string, description string, values []string, defaultValue *string) NamedArg {
+func String(name string, description string, noinput bool, values []string, defaultValue *string) NamedArg {
 	return NamedArg{
 		Name: name,
 		Arg: Arg{
-			String: &ArgString{description, values, defaultValue},
+			String: &ArgString{description, noinput, values, defaultValue},
 		},
 	}
 }
 
-func Bool(name string, description string, defaultValue *bool) NamedArg {
+func Bool(name string, description string, noinput bool, defaultValue *bool) NamedArg {
 	return NamedArg{
 		Name: name,
 		Arg: Arg{
-			Bool: &ArgBool{description, defaultValue},
+			Bool: &ArgBool{description, noinput, defaultValue},
 		},
 	}
 }
 
-func Array(name string, description string, values []string, defaultValue []string) NamedArg {
+func Array(name string, description string, noinput bool, values []string, defaultValue []string) NamedArg {
 	return NamedArg{
 		Name: name,
 		Arg: Arg{
-			Array: &ArgArray{description, values, defaultValue},
+			Array: &ArgArray{description, noinput, values, defaultValue},
 		},
 	}
 }
 
-func Map(name string, description string, defaultValues ArgsValues, keys Args) NamedArg {
+func Map(name string, description string, noinput bool, defaultValues ArgsValues, keys Args) NamedArg {
 	return NamedArg{
 		Name: name,
 		Arg: Arg{
-			Map: &ArgMap{description, defaultValues, keys},
+			Map: &ArgMap{description, noinput, defaultValues, keys},
 		},
 	}
 }

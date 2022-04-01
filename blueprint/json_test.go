@@ -12,8 +12,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat string args",
 		Args{
-			String("param1", "", nil, nil),
-			String("param2", "", nil, StrPtr("the default")),
+			String("param1", "", false, nil, nil),
+			String("param2", "", false, nil, StrPtr("the default")),
 		},
 		`{"param1":"value1","param2":"value2"}`,
 		nil,
@@ -22,8 +22,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat boolean args",
 		Args{
-			Bool("param1", "", nil),
-			Bool("param2", "", BoolPtr(true)),
+			Bool("param1", "", false, nil),
+			Bool("param2", "", false, BoolPtr(true)),
 		},
 		`{"param1":true,"param2":false}`,
 		nil,
@@ -32,7 +32,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat string arg wrong value",
 		Args{
-			String("param", "", nil, nil),
+			String("param", "", false, nil, nil),
 		},
 		`{"param":123}`,
 		errors.New(`argument "param" should be string`),
@@ -41,7 +41,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat string arg null value",
 		Args{
-			String("param", "", nil, nil),
+			String("param", "", false, nil, nil),
 		},
 		`{"param":null}`,
 		errors.New(`argument "param" should be string`),
@@ -50,7 +50,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"array string arg",
 		Args{
-			Array("param", "", nil, nil),
+			Array("param", "", false, nil, nil),
 		},
 		`{"param":["value1","value2"]}`,
 		nil,
@@ -59,7 +59,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"array string arg wrong value",
 		Args{
-			Array("param", "", nil, nil),
+			Array("param", "", false, nil, nil),
 		},
 		`{"param":"should be string array"}`,
 		errors.New(`argument "param" should be array`),
@@ -68,8 +68,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"nested arg",
 		Args{
-			Map("param", "", nil, Args{
-				String("nested", "", nil, nil),
+			Map("param", "", false, nil, Args{
+				String("nested", "", false, nil, nil),
 			}),
 		},
 		`{"param":{"nested":"the_value"}}`,
@@ -79,8 +79,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"nested arg wrong value",
 		Args{
-			Map("param", "", nil, Args{
-				String("nested", "", nil, nil),
+			Map("param", "", false, nil, Args{
+				String("nested", "", false, nil, nil),
 			}),
 		},
 		`{"param":"the_value"}`,
@@ -90,9 +90,9 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"double nested arg",
 		Args{
-			Map("param", "", nil, Args{
-				Map("internal", "", nil, Args{
-					String("nested", "", nil, nil),
+			Map("param", "", false, nil, Args{
+				Map("internal", "", false, nil, Args{
+					String("nested", "", false, nil, nil),
 				}),
 			}),
 		},

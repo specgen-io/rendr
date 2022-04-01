@@ -8,7 +8,7 @@ import (
 )
 
 func ParseValues(args Args, values []string) (ArgsValues, error) {
-	rootArg := Map("", "", nil, args)
+	rootArg := Map("", "", false, nil, args)
 	result := ArgsValues{}
 	for _, value := range values {
 		parts := strings.SplitN(value, "=", 2)

@@ -11,8 +11,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"flat string args",
 		Args{
-			String("param1", "", nil, nil),
-			String("param2", "", nil, StrPtr("the default")),
+			String("param1", "", false, nil, nil),
+			String("param2", "", false, nil, StrPtr("the default")),
 		},
 		[]string{"param1=value1", "param2=value2"},
 		nil,
@@ -21,8 +21,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"flat bool args",
 		Args{
-			Bool("param1", "", nil),
-			Bool("param2", "", BoolPtr(false)),
+			Bool("param1", "", false, nil),
+			Bool("param2", "", false, BoolPtr(false)),
 		},
 		[]string{"param1=yes", "param2=true"},
 		nil,
@@ -31,8 +31,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"non existing arg",
 		Args{
-			String("param1", "", nil, nil),
-			String("param2", "", nil, StrPtr("the default")),
+			String("param1", "", false, nil, nil),
+			String("param2", "", false, nil, StrPtr("the default")),
 		},
 		[]string{"param1=value1", "non_existing=value2"},
 		errors.New(`argument "non_existing" was not found`),
@@ -41,8 +41,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"nested arg",
 		Args{
-			Map("param", "", nil, Args{
-				String("nested", "", nil, nil),
+			Map("param", "", false, nil, Args{
+				String("nested", "", false, nil, nil),
 			}),
 		},
 		[]string{"param.nested=the_value"},
@@ -52,7 +52,7 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"nested arg is not map",
 		Args{
-			String("param", "", nil, nil),
+			String("param", "", false, nil, nil),
 		},
 		[]string{"param.nested=the_value"},
 		errors.New(`argument "param" should be map but found string`),
@@ -61,7 +61,7 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"array arg",
 		Args{
-			Array("param", "", nil, nil),
+			Array("param", "", false, nil, nil),
 		},
 		[]string{"param=value1,value2,value3"},
 		nil,

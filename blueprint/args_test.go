@@ -21,6 +21,7 @@ default: the value 1
 		Arg{
 			String: &ArgString{
 				"the description",
+				false,
 				[]string{"the value 1", "the value 2"},
 				StrPtr("the value 1"),
 			},
@@ -36,6 +37,7 @@ default: yes
 		Arg{
 			Bool: &ArgBool{
 				"the description",
+				false,
 				BoolPtr(true),
 			},
 		},
@@ -56,6 +58,7 @@ default:
 		Arg{
 			Array: &ArgArray{
 				"the description",
+				false,
 				[]string{"the value 1", "the value 2", "the value 3"},
 				[]string{"the value 1", "the value 2"},
 			},
@@ -74,9 +77,10 @@ keys:
 		Arg{
 			Map: &ArgMap{
 				"the description",
+				false,
 				nil,
 				Args{
-					String("param", "param description", nil, nil),
+					String("param", "param description", false, nil, nil),
 				},
 			},
 		},
@@ -110,9 +114,9 @@ the_arg_3:
     - the value 2
 `,
 		Args{
-			String("the_arg_1", "the description", []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
-			Bool("the_arg_2", "the description", BoolPtr(true)),
-			Array("the_arg_3", "the description", []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
+			String("the_arg_1", "the description", false, []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
+			Bool("the_arg_2", "the description", false, BoolPtr(true)),
+			Array("the_arg_3", "the description", false, []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
 		},
 	},
 }

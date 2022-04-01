@@ -10,28 +10,37 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"string args",
 		Args{
-			String("param1", "", nil, nil),
-			String("param2", "", nil, StrPtr("the default")),
+			String("param1", "", false, nil, nil),
+			String("param2", "", true, nil, StrPtr("the default")),
 		},
 		false,
 		HardcodedGetter("the value"),
 		ArgsValues{"param1": "the value", "param2": "the default"},
 	},
 	{
+		"string arg noinput",
+		Args{
+			String("param", "", true, nil, StrPtr("the default")),
+		},
+		false,
+		HardcodedGetter("the value"),
+		ArgsValues{"param": "the default"},
+	},
+	{
 		"bool args",
 		Args{
-			Bool("param1", "", nil),
-			Bool("param2", "", BoolPtr(false)),
+			Bool("param1", "", false, nil),
+			Bool("param2", "", true, BoolPtr(false)),
 		},
 		false,
 		HardcodedGetter(true),
 		ArgsValues{"param1": true, "param2": false},
 	},
 	{
-		"string args should get",
+		"string args force input",
 		Args{
-			String("param1", "", nil, nil),
-			String("param2", "", nil, StrPtr("the default")),
+			String("param1", "", false, nil, nil),
+			String("param2", "", false, nil, StrPtr("the default")),
 		},
 		true,
 		HardcodedGetter("the value"),
@@ -40,8 +49,8 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"array args",
 		Args{
-			Array("param1", "", nil, nil),
-			Array("param2", "", nil, []string{"three", "four"}),
+			Array("param1", "", false, nil, nil),
+			Array("param2", "", true, nil, []string{"three", "four"}),
 		},
 		false,
 		HardcodedGetter([]string{"one", "two"}),
@@ -50,8 +59,8 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"array args should get",
 		Args{
-			Array("param1", "", nil, nil),
-			Array("param2", "", nil, []string{"three", "four"}),
+			Array("param1", "", false, nil, nil),
+			Array("param2", "", false, nil, []string{"three", "four"}),
 		},
 		true,
 		HardcodedGetter([]string{"one", "two"}),
@@ -60,9 +69,9 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"map args",
 		Args{
-			Map("themap", "", nil, Args{
-				String("param1", "", nil, nil),
-				String("param2", "", nil, StrPtr("the default")),
+			Map("themap", "", false, nil, Args{
+				String("param1", "", false, nil, nil),
+				String("param2", "", true, nil, StrPtr("the default")),
 			}),
 		},
 		false,
@@ -74,7 +83,7 @@ var casesGetValues = []GetValuesTestCase{
 func Test_GetValues(t *testing.T) {
 	for _, testcase := range casesGetValues {
 		t.Logf(`Running test case: %s`, testcase.Name)
-		values, err := GetValues(testcase.Args, testcase.ReviewDefaults, ArgsValues{}, testcase.Getter)
+		values, err := GetValues(testcase.Args, testcase.ForceInput, ArgsValues{}, testcase.Getter)
 		assert.Equal(t, err, nil)
 		if !cmp.Equal(testcase.Expected, values) {
 			t.Errorf("\nexpected: %s\nactual:   %s", testcase.Expected, values)
@@ -83,15 +92,15 @@ func Test_GetValues(t *testing.T) {
 }
 
 type GetValuesTestCase struct {
-	Name           string
-	Args           Args
-	ReviewDefaults bool
-	Getter         ArgValueGetter
-	Expected       ArgsValues
+	Name       string
+	Args       Args
+	ForceInput bool
+	Getter     ArgValueGetter
+	Expected   ArgsValues
 }
 
-func HardcodedGetter(getValue ArgValue) ArgValueGetter {
+func HardcodedGetter(value ArgValue) ArgValueGetter {
 	return func(arg NamedArg) (ArgValue, error) {
-		return getValue, nil
+		return value, nil
 	}
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func ValidateValues(args Args, values map[string]interface{}) (ArgsValues, error) {
-	rootArg := Map("", "", nil, args)
+	rootArg := Map("", "", false, nil, args)
 	value, err := ValidateValue([]string{}, &rootArg, values)
 	if err != nil {
 		return nil, err

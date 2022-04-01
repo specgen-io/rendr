@@ -9,7 +9,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"string arg",
 		Args{
-			String("param", "", nil, nil),
+			String("param", "", false, nil, nil),
 		},
 		ArgsValues{"param": "the value"},
 		ArgsValues{
@@ -19,7 +19,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"boolean arg",
 		Args{
-			Bool("param", "", nil),
+			Bool("param", "", false, nil),
 		},
 		ArgsValues{"param": true},
 		ArgsValues{
@@ -29,7 +29,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"string with values arg",
 		Args{
-			String("param", "", []string{"value1", "value2"}, nil),
+			String("param", "", false, []string{"value1", "value2"}, nil),
 		},
 		ArgsValues{"param": "value2"},
 		ArgsValues{
@@ -39,7 +39,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"array string arg",
 		Args{
-			Array("param", "", []string{"value1", "value2", "value3"}, nil),
+			Array("param", "", false, []string{"value1", "value2", "value3"}, nil),
 		},
 		ArgsValues{"param": []string{"value1", "value3"}},
 		ArgsValues{

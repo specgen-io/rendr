@@ -21,7 +21,7 @@ type Template struct {
 	BlueprintPath string
 }
 
-func (t Template) Render(outPath string, allowInput bool, valuesJsonData []byte, overridesKeysValues []string) ([]files.Text, error) {
+func (t Template) Render(outPath string, noInput bool, forceInput bool, valuesJsonData []byte, overridesKeysValues []string) ([]files.Text, error) {
 	filesystem, err := getFilesystem(t.RepoUrl)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (t Template) Render(outPath string, allowInput bool, valuesJsonData []byte,
 		return nil, err
 	}
 
-	argsValues, err := t.GetArgsValues(blueprint.Args, allowInput, valuesJsonData, overridesKeysValues)
+	argsValues, err := t.GetArgsValues(blueprint.Args, noInput, forceInput, valuesJsonData, overridesKeysValues)
 	if err != nil {
 		return nil, err
 	}

@@ -10,8 +10,8 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"string arg",
 		Args{
-			String("param1", "", nil, nil),
-			String("param2", "", nil, StrPtr("the default")),
+			String("param1", "", false, nil, nil),
+			String("param2", "", false, nil, StrPtr("the default")),
 		},
 		ArgsValues{"param1": "the value", "param2": "the default"},
 		ArgsValues{"param2": "the override"},
@@ -20,8 +20,8 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"boolean arg",
 		Args{
-			Bool("param1", "", nil),
-			Bool("param2", "", BoolPtr(false)),
+			Bool("param1", "", false, nil),
+			Bool("param2", "", false, BoolPtr(false)),
 		},
 		ArgsValues{"param1": false, "param2": false},
 		ArgsValues{"param2": true},
@@ -30,8 +30,8 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"string arg new",
 		Args{
-			String("param1", "", nil, nil),
-			String("param2", "", nil, StrPtr("the default")),
+			String("param1", "", false, nil, nil),
+			String("param2", "", false, nil, StrPtr("the default")),
 		},
 		ArgsValues{"param1": "the value"},
 		ArgsValues{"param2": "the override"},
@@ -40,9 +40,9 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"nested arg",
 		Args{
-			Map("param", "", nil, Args{
-				String("nested1", "", nil, nil),
-				String("nested2", "", nil, nil),
+			Map("param", "", false, nil, Args{
+				String("nested1", "", false, nil, nil),
+				String("nested2", "", false, nil, nil),
 			}),
 		},
 		ArgsValues{"param": ArgsValues{"nested1": "the_value"}},
