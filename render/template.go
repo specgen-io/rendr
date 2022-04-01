@@ -28,7 +28,7 @@ const (
 	ForceInputMode   InputMode = "force"
 )
 
-func (t Template) Render(outPath string, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) ([]TextFile, error) {
+func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (TextFiles, error) {
 	filesystem, err := getFilesystem(t.RepoUrl)
 	if err != nil {
 		return nil, err
@@ -44,32 +44,40 @@ func (t Template) Render(outPath string, inputMode InputMode, valuesJsonData []b
 		return nil, err
 	}
 
-	result := []TextFile{}
+	files := []TextFile{}
 
 	for _, root := range blueprint.Roots {
-		rootFiles, err := t.RenderRoot(filesystem, root, blueprint, argsValues, outPath)
+		rootFiles, err := t.RenderRoot(filesystem, root, blueprint, argsValues)
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, rootFiles...)
+		files = append(files, rootFiles...)
 	}
 
-	return result, err
+	for source, target := range blueprint.Rename {
+		for i := range files {
+			path := files[i].Path
+			if strings.HasPrefix(path, source) {
+				files[i].Path = strings.Replace(path, source, target, 1)
+			}
+		}
+	}
+
+	return files, err
 }
 
 func (t Template) RenderRoot(
 	filesystem billy.Filesystem,
 	root string,
 	blueprint *blueprint.Blueprint,
-	argsValues blueprint.ArgsValues,
-	outPath string) ([]TextFile, error) {
+	argsValues blueprint.ArgsValues) ([]TextFile, error) {
 
 	templateFiles, err := t.getFiles(filesystem, root, blueprint.IgnorePaths)
 	if err != nil {
 		return nil, err
 	}
 
-	renderedFiles, err := renderFiles(templateFiles, outPath, argsValues)
+	renderedFiles, err := renderFiles(templateFiles, argsValues)
 	if err != nil {
 		return nil, err
 	}
@@ -77,10 +85,10 @@ func (t Template) RenderRoot(
 	return renderedFiles, nil
 }
 
-func renderFiles(templateFiles []TextFile, outPath string, argsValues blueprint.ArgsValues) ([]TextFile, error) {
+func renderFiles(templateFiles []TextFile, argsValues blueprint.ArgsValues) ([]TextFile, error) {
 	result := []TextFile{}
 	for _, templateFile := range templateFiles {
-		renderedFile, err := renderFile(&templateFile, outPath, argsValues)
+		renderedFile, err := renderFile(&templateFile, argsValues)
 		if err != nil {
 			return nil, fmt.Errorf(`template "%s" returned error: %s`, templateFile.Path, err.Error())
 		}
@@ -91,7 +99,7 @@ func renderFiles(templateFiles []TextFile, outPath string, argsValues blueprint.
 	return result, nil
 }
 
-func renderFile(templateFile *TextFile, outPath string, argsValues blueprint.ArgsValues) (*TextFile, error) {
+func renderFile(templateFile *TextFile, argsValues blueprint.ArgsValues) (*TextFile, error) {
 	templatePath := templateFile.Path
 
 	renderedPath, err := renderPath(templatePath, argsValues)
@@ -108,7 +116,7 @@ func renderFile(templateFile *TextFile, outPath string, argsValues blueprint.Arg
 		return nil, err
 	}
 
-	return &TextFile{path.Join(outPath, *renderedPath), content}, nil
+	return &TextFile{*renderedPath, content}, nil
 }
 
 func getFilesystem(repoUrl string) (billy.Filesystem, error) {
@@ -138,6 +146,9 @@ func (t Template) LoadBlueprint(filesystem billy.Filesystem) (*blueprint.Bluepri
 	result.IgnorePaths = append(result.IgnorePaths, t.BlueprintPath)
 	if result == nil || len(result.Roots) == 0 {
 		result.Roots = []string{"."}
+	}
+	if result.Rename == nil {
+		result.Rename = map[string]string{}
 	}
 	return result, nil
 }

@@ -19,12 +19,13 @@ func (arr PathPrefixArray) Matches(value string) bool {
 }
 
 type Blueprint struct {
-	Blueprint   string          `yaml:"blueprint"`
-	Name        string          `yaml:"name"`
-	Title       string          `yaml:"title"`
-	Roots       []string        `yaml:"roots"`
-	Args        Args            `yaml:"args"`
-	IgnorePaths PathPrefixArray `yaml:"ignore"`
+	Blueprint   string            `yaml:"blueprint"`
+	Name        string            `yaml:"name"`
+	Title       string            `yaml:"title"`
+	Roots       []string          `yaml:"roots"`
+	Args        Args              `yaml:"args"`
+	IgnorePaths PathPrefixArray   `yaml:"ignore"`
+	Rename      map[string]string `yaml:"rename"`
 }
 
 func Read(blueprintContent string) (*Blueprint, error) {

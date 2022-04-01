@@ -3,6 +3,7 @@ package render
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -10,6 +11,8 @@ type TextFile struct {
 	Path    string
 	Content string
 }
+
+type TextFiles []TextFile
 
 func Exists(path string) bool {
 	if _, err := os.Stat(path); err != nil {
@@ -20,21 +23,22 @@ func Exists(path string) bool {
 	return true
 }
 
-func Write(file *TextFile, overwrite bool) error {
-	if overwrite || !Exists(file.Path) {
+func (file *TextFile) Write(outPath string, overwrite bool) error {
+	fullPath := path.Join(outPath, file.Path)
+	if overwrite || !Exists(fullPath) {
 		data := []byte(file.Content)
 
-		dir := filepath.Dir(file.Path)
+		dir := filepath.Dir(fullPath)
 		_ = os.MkdirAll(dir, os.ModePerm)
 
-		return ioutil.WriteFile(file.Path, data, 0644)
+		return ioutil.WriteFile(fullPath, data, 0644)
 	}
 	return nil
 }
 
-func WriteAll(files []TextFile, overwrite bool) error {
+func (files TextFiles) WriteAll(outPath string, overwrite bool) error {
 	for _, file := range files {
-		err := Write(&file, overwrite)
+		err := file.Write(outPath, overwrite)
 		if err != nil {
 			return err
 		}
