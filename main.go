@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/specgen-io/rendr/files"
 	"github.com/specgen-io/rendr/render"
 	"io/ioutil"
 	"log"
@@ -39,7 +38,7 @@ func main() {
 	renderedFiles, err := template.Render(args.OutPath, inputMode, valuesJsonData, args.Overrides)
 	failIfError(err, `Failed to render`)
 
-	err = files.WriteAll(renderedFiles, true)
+	err = render.WriteAll(renderedFiles, true)
 	failIfError(err, `Failed to write rendered files`)
 }
 

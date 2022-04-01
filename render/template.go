@@ -9,7 +9,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/specgen-io/rendr/blueprint"
-	"github.com/specgen-io/rendr/files"
 	"io/fs"
 	"path"
 	"strings"
@@ -29,7 +28,7 @@ const (
 	ForceInputMode   InputMode = "force"
 )
 
-func (t Template) Render(outPath string, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) ([]files.Text, error) {
+func (t Template) Render(outPath string, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) ([]TextFile, error) {
 	filesystem, err := getFilesystem(t.RepoUrl)
 	if err != nil {
 		return nil, err
@@ -45,7 +44,7 @@ func (t Template) Render(outPath string, inputMode InputMode, valuesJsonData []b
 		return nil, err
 	}
 
-	result := []files.Text{}
+	result := []TextFile{}
 
 	for _, root := range blueprint.Roots {
 		rootFiles, err := t.RenderRoot(filesystem, root, blueprint, argsValues, outPath)
@@ -63,9 +62,9 @@ func (t Template) RenderRoot(
 	root string,
 	blueprint *blueprint.Blueprint,
 	argsValues blueprint.ArgsValues,
-	outPath string) ([]files.Text, error) {
+	outPath string) ([]TextFile, error) {
 
-	result := []files.Text{}
+	result := []TextFile{}
 
 	staticFiles, err := t.getFiles(filesystem, root, blueprint.StaticPaths, blueprint.IgnorePaths)
 	if err != nil {
@@ -92,8 +91,8 @@ func (t Template) RenderRoot(
 	return result, nil
 }
 
-func renderFiles(templateFiles []files.Text, outPath string, argsValues blueprint.ArgsValues) ([]files.Text, error) {
-	result := []files.Text{}
+func renderFiles(templateFiles []TextFile, outPath string, argsValues blueprint.ArgsValues) ([]TextFile, error) {
+	result := []TextFile{}
 	for _, templateFile := range templateFiles {
 		renderedFile, err := renderFile(&templateFile, outPath, argsValues)
 		if err != nil {
@@ -106,7 +105,7 @@ func renderFiles(templateFiles []files.Text, outPath string, argsValues blueprin
 	return result, nil
 }
 
-func renderFile(templateFile *files.Text, outPath string, argsValues blueprint.ArgsValues) (*files.Text, error) {
+func renderFile(templateFile *TextFile, outPath string, argsValues blueprint.ArgsValues) (*TextFile, error) {
 	templatePath := templateFile.Path
 
 	renderedPath, err := renderPath(templatePath, argsValues)
@@ -123,14 +122,14 @@ func renderFile(templateFile *files.Text, outPath string, argsValues blueprint.A
 		return nil, err
 	}
 
-	return &files.Text{path.Join(outPath, *renderedPath), content}, nil
+	return &TextFile{path.Join(outPath, *renderedPath), content}, nil
 }
 
-func renderStaticFiles(staticFiles []files.Text, outPath string) ([]files.Text, error) {
-	result := []files.Text{}
+func renderStaticFiles(staticFiles []TextFile, outPath string) ([]TextFile, error) {
+	result := []TextFile{}
 	for _, theFile := range staticFiles {
 		content := theFile.Content
-		result = append(result, files.Text{path.Join(outPath, theFile.Path), content})
+		result = append(result, TextFile{path.Join(outPath, theFile.Path), content})
 	}
 	return result, nil
 }
@@ -169,8 +168,8 @@ func (t Template) LoadBlueprint(filesystem billy.Filesystem) (*blueprint.Bluepri
 	return result, nil
 }
 
-func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, includeOnlyPrefixes blueprint.PathPrefixArray, excludePrefixes blueprint.PathPrefixArray) ([]files.Text, error) {
-	result := []files.Text{}
+func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, includeOnlyPrefixes blueprint.PathPrefixArray, excludePrefixes blueprint.PathPrefixArray) ([]TextFile, error) {
+	result := []TextFile{}
 	rootFullPath := path.Join(t.Path, rootPath)
 	err := Walk(filesystem, rootFullPath, func(itempath string, info fs.FileInfo, err error) error {
 		filepath := strings.TrimPrefix(strings.TrimPrefix(itempath, rootFullPath), "/")
@@ -182,7 +181,7 @@ func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, include
 			if err != nil {
 				return nil
 			}
-			file := files.Text{filepath, string(data)}
+			file := TextFile{filepath, string(data)}
 			if includeOnlyPrefixes == nil || includeOnlyPrefixes.Matches(filepath) {
 				result = append(result, file)
 			}
