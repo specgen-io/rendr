@@ -27,8 +27,16 @@ func main() {
 		valuesJsonData = data
 	}
 
+	inputMode := render.RegularInputMode
+	if args.ForceInput {
+		inputMode = render.ForceInputMode
+	}
+	if args.NoInput {
+		inputMode = render.NoInputMode
+	}
+
 	template := render.Template{args.TemplateUrl, args.Path, args.BlueprintPath}
-	renderedFiles, err := template.Render(args.OutPath, args.NoInput, args.ForceInput, valuesJsonData, args.Overrides)
+	renderedFiles, err := template.Render(args.OutPath, inputMode, valuesJsonData, args.Overrides)
 	failIfError(err, `Failed to render`)
 
 	err = files.WriteAll(renderedFiles, true)

@@ -5,7 +5,7 @@ import (
 	"github.com/specgen-io/rendr/input"
 )
 
-func (t Template) GetArgsValues(args blueprint.Args, noInput bool, forceInput bool, valuesJsonData []byte, overridesKeysValues []string) (blueprint.ArgsValues, error) {
+func (t Template) GetArgsValues(args blueprint.Args, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (blueprint.ArgsValues, error) {
 	var err error = nil
 
 	argsValues := blueprint.ArgsValues{}
@@ -29,10 +29,10 @@ func (t Template) GetArgsValues(args blueprint.Args, noInput bool, forceInput bo
 	}
 
 	argsInput := input.Survey
-	if noInput {
+	if inputMode == NoInputMode {
 		argsInput = input.NoInput
 	}
-	argsValues, err = blueprint.GetValues(args, forceInput, argsValues, argsInput)
+	argsValues, err = blueprint.GetValues(args, inputMode == ForceInputMode, argsValues, argsInput)
 	if err != nil {
 		return nil, err
 	}

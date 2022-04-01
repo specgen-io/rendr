@@ -21,7 +21,15 @@ type Template struct {
 	BlueprintPath string
 }
 
-func (t Template) Render(outPath string, noInput bool, forceInput bool, valuesJsonData []byte, overridesKeysValues []string) ([]files.Text, error) {
+type InputMode string
+
+const (
+	RegularInputMode InputMode = "regular"
+	NoInputMode      InputMode = "no"
+	ForceInputMode   InputMode = "force"
+)
+
+func (t Template) Render(outPath string, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) ([]files.Text, error) {
 	filesystem, err := getFilesystem(t.RepoUrl)
 	if err != nil {
 		return nil, err
@@ -32,7 +40,7 @@ func (t Template) Render(outPath string, noInput bool, forceInput bool, valuesJs
 		return nil, err
 	}
 
-	argsValues, err := t.GetArgsValues(blueprint.Args, noInput, forceInput, valuesJsonData, overridesKeysValues)
+	argsValues, err := t.GetArgsValues(blueprint.Args, inputMode, valuesJsonData, overridesKeysValues)
 	if err != nil {
 		return nil, err
 	}
