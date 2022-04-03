@@ -48,14 +48,14 @@ ARTFACTORY_URL="https://specgen.jfrog.io/artifactory/binaries/rendr"
 
 echo "Releasing to Artifactory: $ARTFACTORY_URL/latest"
 
-curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/latest/rendr_darwin_amd64.zip"
-curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/latest/rendr_linux_amd64.zip"
-curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/latest/rendr_windows_amd64.zip"
+curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/latest/rendr_darwin_amd64.zip"
+curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_linux_amd64.zip "$ARTFACTORY_URL/latest/rendr_linux_amd64.zip"
+curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_windows_amd64.zip "$ARTFACTORY_URL/latest/rendr_windows_amd64.zip"
 
 echo "Releasing to Artifactory: $ARTFACTORY_URL/$RELEASE_NAME"
 
-curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_darwin_amd64.zip"
-curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_linux_amd64.zip"
-curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_windows_amd64.zip"
+curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_darwin_amd64.zip"
+curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_linux_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_linux_amd64.zip"
+curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_windows_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_windows_amd64.zip"
 
 echo "Done releasing to Artifactory"
