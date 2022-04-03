@@ -47,7 +47,7 @@ set +e
 $GOPATH/bin/github-release release --security-token $GITHUB_TOKEN --user specgen-io --repo rendr --tag $RELEASE_NAME --target main
 set -e
 
-sleep 5
+sleep 10
 
 echo "Releasing rendr_darwin_amd64.zip"
 $GOPATH/bin/github-release upload --replace --security-token $GITHUB_TOKEN --user specgen-io --repo rendr --tag $RELEASE_NAME --name rendr_darwin_amd64.zip  --file rendr_darwin_amd64.zip
