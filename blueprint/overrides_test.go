@@ -49,6 +49,17 @@ var casesOverrideValues = []OverrideValuesTestCase{
 		ArgsValues{"param": ArgsValues{"nested2": "override"}},
 		ArgsValues{"param": ArgsValues{"nested1": "the_value", "nested2": "override"}},
 	},
+	{
+		"nested arg from nil",
+		Args{
+			Map("param", "", false, nil, Args{
+				String("nested", "", false, nil, nil),
+			}),
+		},
+		nil,
+		ArgsValues{"param": ArgsValues{"nested": "override"}},
+		ArgsValues{"param": ArgsValues{"nested": "override"}},
+	},
 }
 
 func Test_OverrideValues(t *testing.T) {

@@ -42,16 +42,14 @@ func OverrideValue(path []string, arg *NamedArg, value, override ArgValue) (ArgV
 		return values, nil
 	}
 	if arg.Map != nil {
-		mapOverrides, isMap := override.(ArgsValues)
-		if !isMap {
-			return nil, errors.New(fmt.Sprintf(`argument "%s" should be map`, strings.Join(path, ".")))
+		mapOverrides, err := castOrEmpty(path, override)
+		if err != nil {
+			return nil, err
 		}
-		mapValues, isMap := value.(ArgsValues)
-		if !isMap {
-			return nil, errors.New(fmt.Sprintf(`argument "%s" should be map`, strings.Join(path, ".")))
-		}
-		if mapValues == nil {
-			mapValues = ArgsValues{}
+
+		mapValues, err := castOrEmpty(path, value)
+		if err != nil {
+			return nil, err
 		}
 
 		for nestedArgName, nestedOverrideValue := range mapOverrides {
@@ -70,4 +68,19 @@ func OverrideValue(path []string, arg *NamedArg, value, override ArgValue) (ArgV
 		return mapValues, nil
 	}
 	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
+}
+
+func castOrEmpty(path []string, value ArgValue) (ArgsValues, error) {
+	if value == nil {
+		return ArgsValues{}, nil
+	}
+	castedMapValues, isMap := value.(ArgsValues)
+	if !isMap {
+		return nil, errors.New(fmt.Sprintf(`argument "%s" should be map`, strings.Join(path, ".")))
+	}
+	if castedMapValues != nil {
+		return castedMapValues, nil
+	} else {
+		return ArgsValues{}, nil
+	}
 }
