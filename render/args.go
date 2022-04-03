@@ -32,7 +32,7 @@ func (t Template) GetArgsValues(args blueprint.Args, inputMode InputMode, values
 	if inputMode == NoInputMode {
 		argsInput = input.NoInput
 	}
-	argsValues, err = blueprint.GetValues(args, inputMode == ForceInputMode, argsValues, argsInput)
+	argsValues, err = blueprint.GetValues(args, inputMode == ForceInputMode, inputMode == NoInputMode, argsValues, argsInput)
 	if err != nil {
 		return nil, err
 	}

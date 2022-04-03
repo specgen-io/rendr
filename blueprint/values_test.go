@@ -14,6 +14,7 @@ var casesGetValues = []GetValuesTestCase{
 			String("param2", "", true, nil, StrPtr("the default")),
 		},
 		false,
+		false,
 		HardcodedGetter("the value"),
 		ArgsValues{"param1": "the value", "param2": "the default"},
 	},
@@ -22,6 +23,7 @@ var casesGetValues = []GetValuesTestCase{
 		Args{
 			String("param", "", true, nil, StrPtr("the default")),
 		},
+		false,
 		false,
 		HardcodedGetter("the value"),
 		ArgsValues{"param": "the default"},
@@ -33,6 +35,7 @@ var casesGetValues = []GetValuesTestCase{
 			Bool("param2", "", true, BoolPtr(false)),
 		},
 		false,
+		false,
 		HardcodedGetter(true),
 		ArgsValues{"param1": true, "param2": false},
 	},
@@ -43,6 +46,7 @@ var casesGetValues = []GetValuesTestCase{
 			String("param2", "", false, nil, StrPtr("the default")),
 		},
 		true,
+		false,
 		HardcodedGetter("the value"),
 		ArgsValues{"param1": "the value", "param2": "the value"},
 	},
@@ -52,6 +56,7 @@ var casesGetValues = []GetValuesTestCase{
 			Array("param1", "", false, nil, nil),
 			Array("param2", "", true, nil, []string{"three", "four"}),
 		},
+		false,
 		false,
 		HardcodedGetter([]string{"one", "two"}),
 		ArgsValues{"param1": []string{"one", "two"}, "param2": []string{"three", "four"}},
@@ -63,6 +68,7 @@ var casesGetValues = []GetValuesTestCase{
 			Array("param2", "", false, nil, []string{"three", "four"}),
 		},
 		true,
+		false,
 		HardcodedGetter([]string{"one", "two"}),
 		ArgsValues{"param1": []string{"one", "two"}, "param2": []string{"one", "two"}},
 	},
@@ -75,6 +81,7 @@ var casesGetValues = []GetValuesTestCase{
 			}),
 		},
 		false,
+		false,
 		HardcodedGetter("the value"),
 		ArgsValues{"themap": ArgsValues{"param1": "the value", "param2": "the default"}},
 	},
@@ -83,7 +90,7 @@ var casesGetValues = []GetValuesTestCase{
 func Test_GetValues(t *testing.T) {
 	for _, testcase := range casesGetValues {
 		t.Logf(`Running test case: %s`, testcase.Name)
-		values, err := GetValues(testcase.Args, testcase.ForceInput, ArgsValues{}, testcase.Getter)
+		values, err := GetValues(testcase.Args, testcase.ForceInput, testcase.NoInput, ArgsValues{}, testcase.Getter)
 		assert.Equal(t, err, nil)
 		if !cmp.Equal(testcase.Expected, values) {
 			t.Errorf("\nexpected: %s\nactual:   %s", testcase.Expected, values)
@@ -95,6 +102,7 @@ type GetValuesTestCase struct {
 	Name       string
 	Args       Args
 	ForceInput bool
+	NoInput    bool
 	Getter     ArgValueGetter
 	Expected   ArgsValues
 }
