@@ -31,4 +31,4 @@ jobs:
 
       - name: Release
         if: contains(github.ref, 'main')
-        run: ./release.sh ${{ steps.version.outputs.version }} ${{ secrets.SPECGEN_GITHUB_TOKEN }}
+        run: ./release.sh ${{ steps.version.outputs.version }} ${{ secrets.SPECGEN_GITHUB_TOKEN }} ${{ secrets.JFROG_USER }} ${{ secrets.JFROG_PASS }}

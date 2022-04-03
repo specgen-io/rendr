@@ -13,9 +13,24 @@ echo "Releasing $VERSION"
 if [ -n "$2" ]; then
     GITHUB_TOKEN=$2
 else
-    echo 'Github token not set'
+    echo 'GITHUB_TOKEN is not set'
     exit 1
 fi
+
+if [ -n "$3" ]; then
+    JFROG_USER=$3
+else
+    echo 'JFROG_USER is not set'
+    exit 1
+fi
+
+if [ -n "$4" ]; then
+    JFROG_PASS=$4
+else
+    echo 'JFROG_PASS is not set'
+    exit 1
+fi
+
 
 zip "./rendr_darwin_amd64.zip" "./dist/darwin_amd64/rendr" -q -j
 zip "./rendr_linux_amd64.zip" "./dist/linux_amd64/rendr" -q -j
@@ -48,14 +63,14 @@ ARTFACTORY_URL="https://specgen.jfrog.io/artifactory/binaries/rendr"
 
 echo "Releasing to Artifactory: $ARTFACTORY_URL/latest"
 
-curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/latest/rendr_darwin_amd64.zip"
-curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_linux_amd64.zip "$ARTFACTORY_URL/latest/rendr_linux_amd64.zip"
-curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_windows_amd64.zip "$ARTFACTORY_URL/latest/rendr_windows_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/latest/rendr_darwin_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/latest/rendr_linux_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/latest/rendr_windows_amd64.zip"
 
 echo "Releasing to Artifactory: $ARTFACTORY_URL/$RELEASE_NAME"
 
-curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_darwin_amd64.zip"
-curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_linux_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_linux_amd64.zip"
-curl -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -T rendr_windows_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_windows_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_darwin_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_linux_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_windows_amd64.zip"
 
 echo "Done releasing to Artifactory"
