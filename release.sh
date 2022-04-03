@@ -58,7 +58,6 @@ $GOPATH/bin/github-release upload --replace --security-token $GITHUB_TOKEN --use
 
 echo "Done releasing to Github"
 
-
 ARTFACTORY_URL="https://specgen.jfrog.io/artifactory/binaries/rendr"
 
 echo "Releasing to Artifactory: $ARTFACTORY_URL/latest"
