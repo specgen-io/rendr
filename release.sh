@@ -27,7 +27,7 @@ go install github.com/aktau/github-release@latest
 
 GOPATH=$(go env GOPATH)
 
-echo "Creating release in Github: $RELEASE_NAME"
+echo "Releasing to Github: $RELEASE_NAME"
 set +e
 $GOPATH/bin/github-release release --security-token $GITHUB_TOKEN --user specgen-io --repo rendr --tag $RELEASE_NAME --target main
 set -e
@@ -41,4 +41,21 @@ $GOPATH/bin/github-release upload --replace --security-token $GITHUB_TOKEN --use
 echo "Releasing rendr_windows_amd64.zip"
 $GOPATH/bin/github-release upload --replace --security-token $GITHUB_TOKEN --user specgen-io --repo rendr --tag $RELEASE_NAME --name rendr_windows_amd64.zip --file rendr_windows_amd64.zip
 
-echo "Done releasing $RELEASE_NAME"
+echo "Done releasing to Github"
+
+
+ARTFACTORY_URL="https://specgen.jfrog.io/artifactory/binaries/rendr"
+
+echo "Releasing to Artifactory: $ARTFACTORY_URL/latest"
+
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/latest/rendr_darwin_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/latest/rendr_linux_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/latest/rendr_windows_amd64.zip"
+
+echo "Releasing to Artifactory: $ARTFACTORY_URL/$RELEASE_NAME"
+
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_darwin_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_linux_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_windows_amd64.zip"
+
+echo "Done releasing to Artifactory"
