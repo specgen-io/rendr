@@ -28,7 +28,7 @@ const (
 	ForceInputMode   InputMode = "force"
 )
 
-func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (TextFiles, error) {
+func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (Files, error) {
 	filesystem, err := getFilesystem(t.RepoUrl)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKe
 		return nil, err
 	}
 
-	files := []TextFile{}
+	files := []File{}
 
 	for _, root := range blueprint.Roots {
 		rootFiles, err := t.RenderRoot(filesystem, root, blueprint, argsValues)
@@ -70,9 +70,10 @@ func (t Template) RenderRoot(
 	filesystem billy.Filesystem,
 	root string,
 	blueprint *blueprint.Blueprint,
-	argsValues blueprint.ArgsValues) ([]TextFile, error) {
+	argsValues blueprint.ArgsValues) ([]File, error) {
 
-	templateFiles, err := t.getFiles(filesystem, root, blueprint.IgnorePaths)
+	renderFullPath := path.Join(t.Path, root)
+	templateFiles, err := getFiles(filesystem, renderFullPath, blueprint.IgnorePaths, blueprint.ExecutablePaths)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +86,8 @@ func (t Template) RenderRoot(
 	return renderedFiles, nil
 }
 
-func renderFiles(templateFiles []TextFile, argsValues blueprint.ArgsValues) ([]TextFile, error) {
-	result := []TextFile{}
+func renderFiles(templateFiles []File, argsValues blueprint.ArgsValues) ([]File, error) {
+	result := []File{}
 	for _, templateFile := range templateFiles {
 		renderedFile, err := renderFile(&templateFile, argsValues)
 		if err != nil {
@@ -99,7 +100,7 @@ func renderFiles(templateFiles []TextFile, argsValues blueprint.ArgsValues) ([]T
 	return result, nil
 }
 
-func renderFile(templateFile *TextFile, argsValues blueprint.ArgsValues) (*TextFile, error) {
+func renderFile(templateFile *File, argsValues blueprint.ArgsValues) (*File, error) {
 	templatePath := templateFile.Path
 
 	renderedPath, err := renderPath(templatePath, argsValues)
@@ -116,7 +117,7 @@ func renderFile(templateFile *TextFile, argsValues blueprint.ArgsValues) (*TextF
 		return nil, err
 	}
 
-	return &TextFile{*renderedPath, content}, nil
+	return &File{*renderedPath, content, templateFile.Executable}, nil
 }
 
 func getFilesystem(repoUrl string) (billy.Filesystem, error) {
@@ -153,9 +154,8 @@ func (t Template) LoadBlueprint(filesystem billy.Filesystem) (*blueprint.Bluepri
 	return result, nil
 }
 
-func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, excludePrefixes blueprint.PathPrefixArray) ([]TextFile, error) {
-	result := []TextFile{}
-	rootFullPath := path.Join(t.Path, rootPath)
+func getFiles(filesystem billy.Filesystem, rootFullPath string, excludePrefixes blueprint.PathArray, executableFiles blueprint.PathArray) ([]File, error) {
+	result := []File{}
 	err := Walk(filesystem, rootFullPath, func(itempath string, info fs.FileInfo, err error) error {
 		filepath := strings.TrimPrefix(strings.TrimPrefix(itempath, rootFullPath), "/")
 		if excludePrefixes.Matches(filepath) {
@@ -166,7 +166,7 @@ func (t Template) getFiles(filesystem billy.Filesystem, rootPath string, exclude
 			if err != nil {
 				return nil
 			}
-			file := TextFile{filepath, string(data)}
+			file := File{filepath, string(data), executableFiles.Contains(filepath)}
 			result = append(result, file)
 		}
 		return nil

@@ -5,9 +5,9 @@ import (
 	"strings"
 )
 
-type PathPrefixArray []string
+type PathArray []string
 
-func (arr PathPrefixArray) Matches(value string) bool {
+func (arr PathArray) Matches(value string) bool {
 	if arr != nil {
 		for _, prefix := range arr {
 			if strings.HasPrefix(value, prefix) {
@@ -18,14 +18,26 @@ func (arr PathPrefixArray) Matches(value string) bool {
 	return false
 }
 
+func (arr PathArray) Contains(value string) bool {
+	if arr != nil {
+		for _, prefix := range arr {
+			if value == prefix {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 type Blueprint struct {
-	Blueprint   string            `yaml:"blueprint"`
-	Name        string            `yaml:"name"`
-	Title       string            `yaml:"title"`
-	Roots       []string          `yaml:"roots"`
-	Args        Args              `yaml:"args"`
-	IgnorePaths PathPrefixArray   `yaml:"ignore"`
-	Rename      map[string]string `yaml:"rename"`
+	Blueprint       string            `yaml:"blueprint"`
+	Name            string            `yaml:"name"`
+	Title           string            `yaml:"title"`
+	Roots           []string          `yaml:"roots"`
+	Args            Args              `yaml:"args"`
+	IgnorePaths     PathArray         `yaml:"ignore"`
+	ExecutablePaths PathArray         `yaml:"executables"`
+	Rename          map[string]string `yaml:"rename"`
 }
 
 func Read(blueprintContent string) (*Blueprint, error) {
