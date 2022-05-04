@@ -7,7 +7,7 @@ import (
 )
 
 func OverrideValues(args Args, values, overrides ArgsValues) (ArgsValues, error) {
-	rootArg := Map("", "", false, nil, args)
+	rootArg := Map("", "", false, args)
 	value, err := OverrideValue([]string{}, &rootArg, values, overrides)
 	if err != nil {
 		return nil, err

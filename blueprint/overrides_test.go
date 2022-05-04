@@ -40,7 +40,7 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"nested arg",
 		Args{
-			Map("param", "", false, nil, Args{
+			Map("param", "", false, Args{
 				String("nested1", "", false, nil, nil),
 				String("nested2", "", false, nil, nil),
 			}),
@@ -52,7 +52,7 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"nested arg from nil",
 		Args{
-			Map("param", "", false, nil, Args{
+			Map("param", "", false, Args{
 				String("nested", "", false, nil, nil),
 			}),
 		},

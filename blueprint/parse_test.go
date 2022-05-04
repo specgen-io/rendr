@@ -41,7 +41,7 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"nested arg",
 		Args{
-			Map("param", "", false, nil, Args{
+			Map("param", "", false, Args{
 				String("nested", "", false, nil, nil),
 			}),
 		},

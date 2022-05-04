@@ -214,10 +214,9 @@ type ArgBool struct {
 }
 
 type ArgMap struct {
-	Description string     `yaml:"description"`
-	NoInput     bool       `yaml:"noinput"`
-	Default     ArgsValues `yaml:"default"`
-	Keys        Args       `yaml:"keys"`
+	Description string `yaml:"description"`
+	NoInput     bool   `yaml:"noinput"`
+	Keys        Args   `yaml:"keys"`
 }
 
 func String(name string, description string, noinput bool, values []string, defaultValue *string) NamedArg {
@@ -247,11 +246,11 @@ func Array(name string, description string, noinput bool, values []string, defau
 	}
 }
 
-func Map(name string, description string, noinput bool, defaultValues ArgsValues, keys Args) NamedArg {
+func Map(name string, description string, noinput bool, keys Args) NamedArg {
 	return NamedArg{
 		Name: name,
 		Arg: Arg{
-			Map: &ArgMap{description, noinput, defaultValues, keys},
+			Map: &ArgMap{description, noinput, keys},
 		},
 	}
 }

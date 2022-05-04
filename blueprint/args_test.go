@@ -78,7 +78,6 @@ keys:
 			Map: &ArgMap{
 				"the description",
 				false,
-				nil,
 				Args{
 					String("param", "param description", false, nil, nil),
 				},

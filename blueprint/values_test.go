@@ -75,7 +75,7 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"map args",
 		Args{
-			Map("themap", "", false, nil, Args{
+			Map("themap", "", false, Args{
 				String("param1", "", false, nil, nil),
 				String("param2", "", true, nil, StrPtr("the default")),
 			}),
