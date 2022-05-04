@@ -10,7 +10,7 @@ func renderPath(templatePath string, argsValues blueprint.ArgsValues) (*string, 
 	parts := strings.Split(templatePath, "/")
 	resultParts := []string{}
 	for _, part := range parts {
-		resultPart, err := renderPathItem(part, argsValues)
+		resultPart, err := renderShortTemplate(part, argsValues)
 		if err != nil {
 			return nil, err
 		}
@@ -25,7 +25,7 @@ func renderPath(templatePath string, argsValues blueprint.ArgsValues) (*string, 
 	return &result, nil
 }
 
-func renderPathItem(template string, argsValues blueprint.ArgsValues) (*string, error) {
+func renderShortTemplate(template string, argsValues blueprint.ArgsValues) (*string, error) {
 	if strings.HasPrefix(template, "{{#") {
 		closeIndex := strings.Index(template, "}}")
 		// if closeIndex == -1
