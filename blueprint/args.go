@@ -152,31 +152,6 @@ const (
 	ArgTypeMap     ArgType = "map"
 )
 
-func (arg NamedArg) Default() ArgValue {
-	if arg.String != nil {
-		if arg.String.Default != nil {
-			return *arg.String.Default
-		}
-		return nil
-	}
-	if arg.Bool != nil {
-		if arg.Bool.Default != nil {
-			return *arg.Bool.Default
-		}
-		return nil
-	}
-	if arg.Array != nil {
-		if arg.Array.Default != nil {
-			return arg.Array.Default
-		}
-		return nil
-	}
-	if arg.Map != nil {
-		return nil
-	}
-	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
-}
-
 func (arg NamedArg) NoInput() bool {
 	if arg.String != nil {
 		return arg.String.NoInput

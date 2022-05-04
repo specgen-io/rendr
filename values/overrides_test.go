@@ -1,7 +1,8 @@
-package blueprint
+package values
 
 import (
 	"github.com/google/go-cmp/cmp"
+	"github.com/specgen-io/rendr/blueprint"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -9,9 +10,9 @@ import (
 var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"string arg",
-		Args{
-			String("param1", "", false, nil, nil),
-			String("param2", "", false, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param1", "", false, nil, nil),
+			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		ArgsValues{"param1": "the value", "param2": "the default"},
 		ArgsValues{"param2": "the override"},
@@ -19,9 +20,9 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	},
 	{
 		"boolean arg",
-		Args{
-			Bool("param1", "", false, nil),
-			Bool("param2", "", false, BoolPtr(false)),
+		blueprint.Args{
+			blueprint.Bool("param1", "", false, nil),
+			blueprint.Bool("param2", "", false, blueprint.BoolPtr(false)),
 		},
 		ArgsValues{"param1": false, "param2": false},
 		ArgsValues{"param2": true},
@@ -29,9 +30,9 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	},
 	{
 		"string arg new",
-		Args{
-			String("param1", "", false, nil, nil),
-			String("param2", "", false, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param1", "", false, nil, nil),
+			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		ArgsValues{"param1": "the value"},
 		ArgsValues{"param2": "the override"},
@@ -39,10 +40,10 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	},
 	{
 		"nested arg",
-		Args{
-			Map("param", "", false, Args{
-				String("nested1", "", false, nil, nil),
-				String("nested2", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Map("param", "", false, blueprint.Args{
+				blueprint.String("nested1", "", false, nil, nil),
+				blueprint.String("nested2", "", false, nil, nil),
 			}),
 		},
 		ArgsValues{"param": ArgsValues{"nested1": "the_value"}},
@@ -51,9 +52,9 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	},
 	{
 		"nested arg from nil",
-		Args{
-			Map("param", "", false, Args{
-				String("nested", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Map("param", "", false, blueprint.Args{
+				blueprint.String("nested", "", false, nil, nil),
 			}),
 		},
 		nil,
@@ -75,7 +76,7 @@ func Test_OverrideValues(t *testing.T) {
 
 type OverrideValuesTestCase struct {
 	Name      string
-	Args      Args
+	Args      blueprint.Args
 	Values    ArgsValues
 	Overrides ArgsValues
 	Expected  ArgsValues

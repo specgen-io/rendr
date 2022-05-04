@@ -1,13 +1,14 @@
-package blueprint
+package values
 
 import (
 	"errors"
 	"fmt"
+	"github.com/specgen-io/rendr/blueprint"
 	"strings"
 )
 
-func OverrideValues(args Args, values, overrides ArgsValues) (ArgsValues, error) {
-	rootArg := Map("", "", false, args)
+func OverrideValues(args blueprint.Args, values, overrides ArgsValues) (ArgsValues, error) {
+	rootArg := blueprint.Map("", "", false, args)
 	value, err := OverrideValue([]string{}, &rootArg, values, overrides)
 	if err != nil {
 		return nil, err
@@ -15,7 +16,7 @@ func OverrideValues(args Args, values, overrides ArgsValues) (ArgsValues, error)
 	return value.(ArgsValues), nil
 }
 
-func OverrideValue(path []string, arg *NamedArg, value, override ArgValue) (ArgValue, error) {
+func OverrideValue(path []string, arg *blueprint.NamedArg, value, override ArgValue) (ArgValue, error) {
 	if arg.String != nil {
 		stringValue, isString := override.(string)
 		if !isString {

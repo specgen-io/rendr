@@ -1,15 +1,16 @@
-package blueprint
+package values
 
 import (
 	"github.com/google/go-cmp/cmp"
+	"github.com/specgen-io/rendr/blueprint"
 	"testing"
 )
 
 var enrichValues = []EnrichTestCase{
 	{
 		"string arg",
-		Args{
-			String("param", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.String("param", "", false, nil, nil),
 		},
 		ArgsValues{"param": "the value"},
 		ArgsValues{
@@ -18,8 +19,8 @@ var enrichValues = []EnrichTestCase{
 	},
 	{
 		"boolean arg",
-		Args{
-			Bool("param", "", false, nil),
+		blueprint.Args{
+			blueprint.Bool("param", "", false, nil),
 		},
 		ArgsValues{"param": true},
 		ArgsValues{
@@ -28,8 +29,8 @@ var enrichValues = []EnrichTestCase{
 	},
 	{
 		"string with values arg",
-		Args{
-			String("param", "", false, []string{"value1", "value2"}, nil),
+		blueprint.Args{
+			blueprint.String("param", "", false, []string{"value1", "value2"}, nil),
 		},
 		ArgsValues{"param": "value2"},
 		ArgsValues{
@@ -38,8 +39,8 @@ var enrichValues = []EnrichTestCase{
 	},
 	{
 		"array string arg",
-		Args{
-			Array("param", "", false, []string{"value1", "value2", "value3"}, nil),
+		blueprint.Args{
+			blueprint.Array("param", "", false, []string{"value1", "value2", "value3"}, nil),
 		},
 		ArgsValues{"param": []string{"value1", "value3"}},
 		ArgsValues{
@@ -60,7 +61,7 @@ func Test_EnrichValues(t *testing.T) {
 
 type EnrichTestCase struct {
 	Name     string
-	Args     Args
+	Args     blueprint.Args
 	Input    ArgsValues
 	Expected ArgsValues
 }

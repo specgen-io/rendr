@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/specgen-io/rendr/blueprint"
+	"github.com/specgen-io/rendr/values"
 )
 
-func Survey(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
+func Survey(arg blueprint.NamedArg) (values.ArgValue, error) {
 	if arg.String != nil {
 		return getString(arg)
 	}
@@ -20,7 +21,7 @@ func Survey(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
 	return nil, errors.New(fmt.Sprintf(`unknown kind of argument "%s"`, arg.Name))
 }
 
-func getBool(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
+func getBool(arg blueprint.NamedArg) (values.ArgValue, error) {
 	defaultValue := true
 	if arg.Bool.Default != nil {
 		defaultValue = *arg.Bool.Default
@@ -35,7 +36,7 @@ func getBool(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
 	return value, err
 }
 
-func getString(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
+func getString(arg blueprint.NamedArg) (values.ArgValue, error) {
 	defaultValue := ""
 	if arg.String.Default != nil {
 		defaultValue = *arg.String.Default
@@ -59,7 +60,7 @@ func getString(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
 	return value, err
 }
 
-func getArray(arg blueprint.NamedArg) (blueprint.ArgValue, error) {
+func getArray(arg blueprint.NamedArg) (values.ArgValue, error) {
 	message := fmt.Sprintf(`%s:`, arg.Array.Description)
 	value := []string{}
 	prompt := &survey.MultiSelect{

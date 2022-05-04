@@ -1,13 +1,16 @@
-package blueprint
+package values
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/specgen-io/rendr/blueprint"
+)
 
 type ArgValue interface{}
 type ArgsValues map[string]ArgValue
 
-type ArgValueGetter func(arg NamedArg) (ArgValue, error)
+type ArgValueGetter func(arg blueprint.NamedArg) (ArgValue, error)
 
-func GetValues(args Args, forceInput bool, noInput bool, argsValues ArgsValues, getter ArgValueGetter) (ArgsValues, error) {
+func GetValues(args blueprint.Args, forceInput bool, noInput bool, argsValues ArgsValues, getter ArgValueGetter) (ArgsValues, error) {
 	values := ArgsValues{}
 	for _, arg := range args {
 		value, _ := argsValues[arg.Name]
@@ -34,10 +37,10 @@ func GetValues(args Args, forceInput bool, noInput bool, argsValues ArgsValues, 
 	return values, nil
 }
 
-func getValue(arg NamedArg, forceInput bool, noInput bool, getter ArgValueGetter) (ArgValue, error) {
+func getValue(arg blueprint.NamedArg, forceInput bool, noInput bool, getter ArgValueGetter) (ArgValue, error) {
 	isStringArgWithSingleOption := arg.String != nil && len(arg.String.Values) == 1
 	shouldGet := (forceInput || (!noInput && !arg.NoInput())) && !isStringArgWithSingleOption
-	value := arg.Default()
+	value := defaultValue(arg)
 	if shouldGet {
 		return getter(arg)
 	} else {
@@ -46,4 +49,29 @@ func getValue(arg NamedArg, forceInput bool, noInput bool, getter ArgValueGetter
 		}
 		return value, nil
 	}
+}
+
+func defaultValue(arg blueprint.NamedArg) ArgValue {
+	if arg.String != nil {
+		if arg.String.Default != nil {
+			return *arg.String.Default
+		}
+		return nil
+	}
+	if arg.Bool != nil {
+		if arg.Bool.Default != nil {
+			return *arg.Bool.Default
+		}
+		return nil
+	}
+	if arg.Array != nil {
+		if arg.Array.Default != nil {
+			return arg.Array.Default
+		}
+		return nil
+	}
+	if arg.Map != nil {
+		return nil
+	}
+	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
 }

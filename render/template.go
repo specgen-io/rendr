@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-billy/v5/osfs"
@@ -8,6 +9,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/specgen-io/rendr/blueprint"
+	"github.com/specgen-io/rendr/values"
 	"io/fs"
 	"path"
 	"strings"
@@ -69,7 +71,7 @@ func (t Template) RenderRoot(
 	filesystem billy.Filesystem,
 	root string,
 	blueprint *blueprint.Blueprint,
-	argsValues blueprint.ArgsValues) ([]File, error) {
+	argsValues values.ArgsValues) ([]File, error) {
 
 	renderFullPath := path.Join(t.Path, root)
 	templateFiles, err := getFiles(filesystem, renderFullPath, blueprint.IgnorePaths, blueprint.ExecutablePaths)
@@ -140,4 +142,57 @@ func getFiles(filesystem billy.Filesystem, rootFullPath string, excludePrefixes 
 		return nil, err
 	}
 	return result, nil
+}
+
+func renderFile(templateFile *File, argsValues values.ArgsValues) (*File, error) {
+	templatePath := templateFile.Path
+
+	renderedPath, err := renderPath(templatePath, argsValues)
+	if err != nil {
+		return nil, err
+	}
+
+	if renderedPath == nil {
+		return nil, nil
+	}
+
+	content, err := values.Render(templateFile.Content, argsValues)
+	if err != nil {
+		return nil, err
+	}
+
+	return &File{*renderedPath, content, templateFile.Executable}, nil
+}
+
+func renderFiles(templateFiles []File, argsValues values.ArgsValues) ([]File, error) {
+	result := []File{}
+	for _, templateFile := range templateFiles {
+		renderedFile, err := renderFile(&templateFile, argsValues)
+		if err != nil {
+			return nil, fmt.Errorf(`template "%s" returned error: %s`, templateFile.Path, err.Error())
+		}
+		if renderedFile != nil {
+			result = append(result, *renderedFile)
+		}
+	}
+	return result, nil
+}
+
+func renderPath(templatePath string, argsValues values.ArgsValues) (*string, error) {
+	parts := strings.Split(templatePath, "/")
+	resultParts := []string{}
+	for _, part := range parts {
+		resultPart, err := values.RenderShort(part, argsValues)
+		if err != nil {
+			return nil, err
+		}
+		if resultPart == nil {
+			return nil, nil
+		}
+		if *resultPart != "" {
+			resultParts = append(resultParts, *resultPart)
+		}
+	}
+	result := strings.Join(resultParts, "/")
+	return &result, nil
 }

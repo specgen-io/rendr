@@ -1,8 +1,9 @@
-package blueprint
+package values
 
 import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"github.com/specgen-io/rendr/blueprint"
 	"gotest.tools/assert"
 	"strings"
 	"testing"
@@ -11,9 +12,9 @@ import (
 var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat string args",
-		Args{
-			String("param1", "", false, nil, nil),
-			String("param2", "", false, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param1", "", false, nil, nil),
+			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		`{"param1":"value1","param2":"value2"}`,
 		nil,
@@ -21,9 +22,9 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"flat boolean args",
-		Args{
-			Bool("param1", "", false, nil),
-			Bool("param2", "", false, BoolPtr(true)),
+		blueprint.Args{
+			blueprint.Bool("param1", "", false, nil),
+			blueprint.Bool("param2", "", false, blueprint.BoolPtr(true)),
 		},
 		`{"param1":true,"param2":false}`,
 		nil,
@@ -31,8 +32,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"flat string arg wrong value",
-		Args{
-			String("param", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.String("param", "", false, nil, nil),
 		},
 		`{"param":123}`,
 		errors.New(`argument "param" should be string`),
@@ -40,8 +41,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"flat string arg null value",
-		Args{
-			String("param", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.String("param", "", false, nil, nil),
 		},
 		`{"param":null}`,
 		errors.New(`argument "param" should be string`),
@@ -49,8 +50,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"array string arg",
-		Args{
-			Array("param", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Array("param", "", false, nil, nil),
 		},
 		`{"param":["value1","value2"]}`,
 		nil,
@@ -58,8 +59,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"array string arg wrong value",
-		Args{
-			Array("param", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Array("param", "", false, nil, nil),
 		},
 		`{"param":"should be string array"}`,
 		errors.New(`argument "param" should be array`),
@@ -67,9 +68,9 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"nested arg",
-		Args{
-			Map("param", "", false, Args{
-				String("nested", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Map("param", "", false, blueprint.Args{
+				blueprint.String("nested", "", false, nil, nil),
 			}),
 		},
 		`{"param":{"nested":"the_value"}}`,
@@ -78,9 +79,9 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"nested arg wrong value",
-		Args{
-			Map("param", "", false, Args{
-				String("nested", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Map("param", "", false, blueprint.Args{
+				blueprint.String("nested", "", false, nil, nil),
 			}),
 		},
 		`{"param":"the_value"}`,
@@ -89,10 +90,10 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	},
 	{
 		"double nested arg",
-		Args{
-			Map("param", "", false, Args{
-				Map("internal", "", false, Args{
-					String("nested", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Map("param", "", false, blueprint.Args{
+				blueprint.Map("internal", "", false, blueprint.Args{
+					blueprint.String("nested", "", false, nil, nil),
 				}),
 			}),
 		},
@@ -119,7 +120,7 @@ func Test_ReadValues(t *testing.T) {
 
 type ReadValuesJsonTestCase struct {
 	Name     string
-	Args     Args
+	Args     blueprint.Args
 	Json     string
 	Error    error
 	Expected ArgsValues

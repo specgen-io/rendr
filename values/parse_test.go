@@ -1,8 +1,9 @@
-package blueprint
+package values
 
 import (
 	"errors"
 	"github.com/google/go-cmp/cmp"
+	"github.com/specgen-io/rendr/blueprint"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -10,9 +11,9 @@ import (
 var casesParseValues = []ParseValuesTestCase{
 	{
 		"flat string args",
-		Args{
-			String("param1", "", false, nil, nil),
-			String("param2", "", false, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param1", "", false, nil, nil),
+			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		[]string{"param1=value1", "param2=value2"},
 		nil,
@@ -20,9 +21,9 @@ var casesParseValues = []ParseValuesTestCase{
 	},
 	{
 		"flat bool args",
-		Args{
-			Bool("param1", "", false, nil),
-			Bool("param2", "", false, BoolPtr(false)),
+		blueprint.Args{
+			blueprint.Bool("param1", "", false, nil),
+			blueprint.Bool("param2", "", false, blueprint.BoolPtr(false)),
 		},
 		[]string{"param1=yes", "param2=true"},
 		nil,
@@ -30,9 +31,9 @@ var casesParseValues = []ParseValuesTestCase{
 	},
 	{
 		"non existing arg",
-		Args{
-			String("param1", "", false, nil, nil),
-			String("param2", "", false, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param1", "", false, nil, nil),
+			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		[]string{"param1=value1", "non_existing=value2"},
 		errors.New(`argument "non_existing" was not found`),
@@ -40,9 +41,9 @@ var casesParseValues = []ParseValuesTestCase{
 	},
 	{
 		"nested arg",
-		Args{
-			Map("param", "", false, Args{
-				String("nested", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Map("param", "", false, blueprint.Args{
+				blueprint.String("nested", "", false, nil, nil),
 			}),
 		},
 		[]string{"param.nested=the_value"},
@@ -51,8 +52,8 @@ var casesParseValues = []ParseValuesTestCase{
 	},
 	{
 		"nested arg is not map",
-		Args{
-			String("param", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.String("param", "", false, nil, nil),
 		},
 		[]string{"param.nested=the_value"},
 		errors.New(`argument "param" should be map but found string`),
@@ -60,8 +61,8 @@ var casesParseValues = []ParseValuesTestCase{
 	},
 	{
 		"array arg",
-		Args{
-			Array("param", "", false, nil, nil),
+		blueprint.Args{
+			blueprint.Array("param", "", false, nil, nil),
 		},
 		[]string{"param=value1,value2,value3"},
 		nil,
@@ -86,7 +87,7 @@ func Test_ParseValues(t *testing.T) {
 
 type ParseValuesTestCase struct {
 	Name     string
-	Args     Args
+	Args     blueprint.Args
 	Values   []string
 	Error    error
 	Expected ArgsValues

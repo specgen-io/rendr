@@ -1,31 +1,21 @@
-package render
+package values
 
 import (
 	"fmt"
-	"github.com/specgen-io/rendr/blueprint"
+	"github.com/cbroglie/mustache"
 	"strings"
 )
 
-func renderPath(templatePath string, argsValues blueprint.ArgsValues) (*string, error) {
-	parts := strings.Split(templatePath, "/")
-	resultParts := []string{}
-	for _, part := range parts {
-		resultPart, err := renderShortTemplate(part, argsValues)
-		if err != nil {
-			return nil, err
-		}
-		if resultPart == nil {
-			return nil, nil
-		}
-		if *resultPart != "" {
-			resultParts = append(resultParts, *resultPart)
-		}
+func Render(template string, argsValues ArgsValues) (string, error) {
+	mustache.AllowMissingVariables = false
+	content, err := mustache.Render(template, argsValues)
+	if err != nil {
+		return "", err
 	}
-	result := strings.Join(resultParts, "/")
-	return &result, nil
+	return content, nil
 }
 
-func renderShortTemplate(template string, argsValues blueprint.ArgsValues) (*string, error) {
+func RenderShort(template string, argsValues ArgsValues) (*string, error) {
 	if strings.HasPrefix(template, "{{#") {
 		closeIndex := strings.Index(template, "}}")
 		// if closeIndex == -1
@@ -36,12 +26,12 @@ func renderShortTemplate(template string, argsValues blueprint.ArgsValues) (*str
 		}
 		fullTemplate := closeFormula(formula, internal)
 
-		_, err := render(fmt.Sprintf(`{{%s}}`, getArgument(formula)), argsValues)
+		_, err := Render(fmt.Sprintf(`{{%s}}`, getArgument(formula)), argsValues)
 		if err != nil {
 			return nil, err
 		}
 
-		result, err := render(fullTemplate, argsValues)
+		result, err := Render(fullTemplate, argsValues)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +44,7 @@ func renderShortTemplate(template string, argsValues blueprint.ArgsValues) (*str
 		}
 		return &result, nil
 	} else {
-		result, err := render(template, argsValues)
+		result, err := Render(template, argsValues)
 		if err != nil {
 			return nil, err
 		}

@@ -1,7 +1,8 @@
-package blueprint
+package values
 
 import (
 	"github.com/google/go-cmp/cmp"
+	"github.com/specgen-io/rendr/blueprint"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -9,9 +10,9 @@ import (
 var casesGetValues = []GetValuesTestCase{
 	{
 		"string args",
-		Args{
-			String("param1", "", false, nil, nil),
-			String("param2", "", true, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param1", "", false, nil, nil),
+			blueprint.String("param2", "", true, nil, blueprint.StrPtr("the default")),
 		},
 		false,
 		false,
@@ -20,8 +21,8 @@ var casesGetValues = []GetValuesTestCase{
 	},
 	{
 		"string arg noinput",
-		Args{
-			String("param", "", true, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param", "", true, nil, blueprint.StrPtr("the default")),
 		},
 		false,
 		false,
@@ -30,9 +31,9 @@ var casesGetValues = []GetValuesTestCase{
 	},
 	{
 		"bool args",
-		Args{
-			Bool("param1", "", false, nil),
-			Bool("param2", "", true, BoolPtr(false)),
+		blueprint.Args{
+			blueprint.Bool("param1", "", false, nil),
+			blueprint.Bool("param2", "", true, blueprint.BoolPtr(false)),
 		},
 		false,
 		false,
@@ -41,9 +42,9 @@ var casesGetValues = []GetValuesTestCase{
 	},
 	{
 		"string args force input",
-		Args{
-			String("param1", "", false, nil, nil),
-			String("param2", "", false, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.String("param1", "", false, nil, nil),
+			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		true,
 		false,
@@ -52,9 +53,9 @@ var casesGetValues = []GetValuesTestCase{
 	},
 	{
 		"array args",
-		Args{
-			Array("param1", "", false, nil, nil),
-			Array("param2", "", true, nil, []string{"three", "four"}),
+		blueprint.Args{
+			blueprint.Array("param1", "", false, nil, nil),
+			blueprint.Array("param2", "", true, nil, []string{"three", "four"}),
 		},
 		false,
 		false,
@@ -63,9 +64,9 @@ var casesGetValues = []GetValuesTestCase{
 	},
 	{
 		"array args should get",
-		Args{
-			Array("param1", "", false, nil, nil),
-			Array("param2", "", false, nil, []string{"three", "four"}),
+		blueprint.Args{
+			blueprint.Array("param1", "", false, nil, nil),
+			blueprint.Array("param2", "", false, nil, []string{"three", "four"}),
 		},
 		true,
 		false,
@@ -74,10 +75,10 @@ var casesGetValues = []GetValuesTestCase{
 	},
 	{
 		"map args",
-		Args{
-			Map("themap", "", false, Args{
-				String("param1", "", false, nil, nil),
-				String("param2", "", true, nil, StrPtr("the default")),
+		blueprint.Args{
+			blueprint.Map("themap", "", false, blueprint.Args{
+				blueprint.String("param1", "", false, nil, nil),
+				blueprint.String("param2", "", true, nil, blueprint.StrPtr("the default")),
 			}),
 		},
 		false,
@@ -100,7 +101,7 @@ func Test_GetValues(t *testing.T) {
 
 type GetValuesTestCase struct {
 	Name       string
-	Args       Args
+	Args       blueprint.Args
 	ForceInput bool
 	NoInput    bool
 	Getter     ArgValueGetter
@@ -108,7 +109,7 @@ type GetValuesTestCase struct {
 }
 
 func HardcodedGetter(value ArgValue) ArgValueGetter {
-	return func(arg NamedArg) (ArgValue, error) {
+	return func(arg blueprint.NamedArg) (ArgValue, error) {
 		return value, nil
 	}
 }

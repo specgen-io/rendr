@@ -1,14 +1,15 @@
-package blueprint
+package values
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/specgen-io/rendr/blueprint"
 	"strings"
 )
 
-func ValidateValues(args Args, values map[string]interface{}) (ArgsValues, error) {
-	rootArg := Map("", "", false, args)
+func ValidateValues(args blueprint.Args, values map[string]interface{}) (ArgsValues, error) {
+	rootArg := blueprint.Map("", "", false, args)
 	value, err := ValidateValue([]string{}, &rootArg, values)
 	if err != nil {
 		return nil, err
@@ -16,7 +17,7 @@ func ValidateValues(args Args, values map[string]interface{}) (ArgsValues, error
 	return value.(ArgsValues), nil
 }
 
-func ValidateValue(path []string, arg *NamedArg, value interface{}) (interface{}, error) {
+func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (interface{}, error) {
 	if arg.String != nil {
 		stringValue, isString := value.(string)
 		if !isString {
@@ -62,7 +63,7 @@ func ValidateValue(path []string, arg *NamedArg, value interface{}) (interface{}
 	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
 }
 
-func ReadValuesJson(args Args, data []byte) (ArgsValues, error) {
+func ReadValuesJson(args blueprint.Args, data []byte) (ArgsValues, error) {
 	values := map[string]interface{}{}
 	err := json.Unmarshal(data, &values)
 	if err != nil {

@@ -2,6 +2,7 @@ package render
 
 import (
 	"github.com/specgen-io/rendr/blueprint"
+	"github.com/specgen-io/rendr/values"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -10,13 +11,13 @@ var renderPathTestCases = []RenderPathTestCase{
 	{
 		"no arguments",
 		"some/path",
-		blueprint.ArgsValues{},
+		values.ArgsValues{},
 		blueprint.StrPtr("some/path"),
 	},
 	{
 		"argument in path",
 		"some/path_{{param.value}}_middle/item",
-		blueprint.ArgsValues{
+		values.ArgsValues{
 			"param": map[string]interface{}{"value": "bla"},
 		},
 		blueprint.StrPtr("some/path_bla_middle/item"),
@@ -24,7 +25,7 @@ var renderPathTestCases = []RenderPathTestCase{
 	{
 		"conditional empty path included",
 		"some/{{#param.value}}/item",
-		blueprint.ArgsValues{
+		values.ArgsValues{
 			"param": map[string]interface{}{"value": true},
 		},
 		blueprint.StrPtr("some/item"),
@@ -32,7 +33,7 @@ var renderPathTestCases = []RenderPathTestCase{
 	{
 		"conditional empty path excluded",
 		"some/{{#param.value}}/item",
-		blueprint.ArgsValues{
+		values.ArgsValues{
 			"param": map[string]interface{}{"value": false},
 		},
 		nil,
@@ -40,7 +41,7 @@ var renderPathTestCases = []RenderPathTestCase{
 	{
 		"conditional non-empty path included",
 		"some/{{#param.value}}path/item",
-		blueprint.ArgsValues{
+		values.ArgsValues{
 			"param": map[string]interface{}{"value": true},
 		},
 		blueprint.StrPtr("some/path/item"),
@@ -69,6 +70,6 @@ func Test_RenderPath(t *testing.T) {
 type RenderPathTestCase struct {
 	Name         string
 	TemplatePath string
-	ArgsValues   blueprint.ArgsValues
+	ArgsValues   values.ArgsValues
 	Expected     *string
 }

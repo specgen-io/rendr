@@ -1,14 +1,15 @@
-package blueprint
+package values
 
 import (
 	"errors"
 	"fmt"
+	"github.com/specgen-io/rendr/blueprint"
 	"strconv"
 	"strings"
 )
 
-func ParseValues(args Args, values []string) (ArgsValues, error) {
-	rootArg := Map("", "", false, args)
+func ParseValues(args blueprint.Args, values []string) (ArgsValues, error) {
+	rootArg := blueprint.Map("", "", false, args)
 	result := ArgsValues{}
 	for _, value := range values {
 		parts := strings.SplitN(value, "=", 2)
@@ -23,7 +24,7 @@ func ParseValues(args Args, values []string) (ArgsValues, error) {
 	return result, nil
 }
 
-func setValue(arg *NamedArg, argsValues ArgsValues, path []string, argValue string) error {
+func setValue(arg *blueprint.NamedArg, argsValues ArgsValues, path []string, argValue string) error {
 	currentValues := argsValues
 	for pathIndex := range path {
 		argName := path[pathIndex]
@@ -80,10 +81,10 @@ func parseBoolean(value string) (bool, error) {
 func parseYesNo(value string) *bool {
 	lowerValue := strings.ToLower(value)
 	if lowerValue == "yes" || lowerValue == "y" {
-		return BoolPtr(true)
+		return blueprint.BoolPtr(true)
 	}
 	if lowerValue == "no" || lowerValue == "n" {
-		return BoolPtr(false)
+		return blueprint.BoolPtr(false)
 	}
 	return nil
 }

@@ -3,26 +3,27 @@ package render
 import (
 	"github.com/specgen-io/rendr/blueprint"
 	"github.com/specgen-io/rendr/input"
+	"github.com/specgen-io/rendr/values"
 )
 
-func (t Template) GetArgsValues(args blueprint.Args, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (blueprint.ArgsValues, error) {
+func (t Template) GetArgsValues(args blueprint.Args, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (values.ArgsValues, error) {
 	var err error = nil
 
-	argsValues := blueprint.ArgsValues{}
+	argsValues := values.ArgsValues{}
 
 	if valuesJsonData != nil {
-		argsValues, err = blueprint.ReadValuesJson(args, valuesJsonData)
+		argsValues, err = values.ReadValuesJson(args, valuesJsonData)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	if overridesKeysValues != nil {
-		overridesValues, err := blueprint.ParseValues(args, overridesKeysValues)
+		overridesValues, err := values.ParseValues(args, overridesKeysValues)
 		if err != nil {
 			return nil, err
 		}
-		argsValues, err = blueprint.OverrideValues(args, argsValues, overridesValues)
+		argsValues, err = values.OverrideValues(args, argsValues, overridesValues)
 		if err != nil {
 			return nil, err
 		}
@@ -32,12 +33,12 @@ func (t Template) GetArgsValues(args blueprint.Args, inputMode InputMode, values
 	if inputMode == NoInputMode {
 		argsInput = input.NoInput
 	}
-	argsValues, err = blueprint.GetValues(args, inputMode == ForceInputMode, inputMode == NoInputMode, argsValues, argsInput)
+	argsValues, err = values.GetValues(args, inputMode == ForceInputMode, inputMode == NoInputMode, argsValues, argsInput)
 	if err != nil {
 		return nil, err
 	}
 
-	argsValues = blueprint.EnrichValues(args, argsValues)
+	argsValues = values.EnrichValues(args, argsValues)
 
 	return argsValues, nil
 }

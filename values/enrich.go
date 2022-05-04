@@ -1,16 +1,17 @@
-package blueprint
+package values
 
 import (
 	"fmt"
+	"github.com/specgen-io/rendr/blueprint"
 )
 
-func EnrichValues(args Args, values ArgsValues) ArgsValues {
-	rootArg := Map("", "", false, args)
+func EnrichValues(args blueprint.Args, values ArgsValues) ArgsValues {
+	rootArg := blueprint.Map("", "", false, args)
 	value := EnrichValue(&rootArg, values)
 	return value.(ArgsValues)
 }
 
-func EnrichValue(arg *NamedArg, value interface{}) interface{} {
+func EnrichValue(arg *blueprint.NamedArg, value interface{}) interface{} {
 	if arg.String != nil {
 		stringValue, _ := value.(string)
 		return packStringValue(arg.String.Values, stringValue)
