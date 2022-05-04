@@ -82,7 +82,7 @@ type cmdRender struct {
 	Help           *bool
 }
 
-func CmdRender() cmdRender {
+func CmdRender() *cmdRender {
 	command := flag.NewFlagSet("render", flag.ExitOnError)
 
 	cmd := cmdRender{Cmd: command, Overrides: stringArray{}}
@@ -113,10 +113,10 @@ func CmdRender() cmdRender {
 		fmt.Println()
 		fmt.Println(`To print usage run: rendr help`)
 	}
-	return cmd
+	return &cmd
 }
 
-func (command cmdRender) Execute(arguments []string) {
+func (command *cmdRender) Execute(arguments []string) {
 	command.Cmd.Parse(arguments)
 
 	if *command.Help {
@@ -169,7 +169,7 @@ type cmdBuild struct {
 	Help *bool
 }
 
-func CmdBuild() cmdBuild {
+func CmdBuild() *cmdBuild {
 	command := flag.NewFlagSet("build", flag.ExitOnError)
 
 	cmd := cmdBuild{Cmd: command}
@@ -187,10 +187,10 @@ func CmdBuild() cmdBuild {
 		fmt.Println(`To print usage run: rendr help`)
 	}
 
-	return cmd
+	return &cmd
 }
 
-func (command cmdBuild) Execute(arguments []string) {
+func (command *cmdBuild) Execute(arguments []string) {
 	command.Cmd.Parse(arguments)
 
 	if *command.Help {
