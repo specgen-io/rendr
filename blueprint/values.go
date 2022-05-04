@@ -35,17 +35,15 @@ func GetValues(args Args, forceInput bool, noInput bool, argsValues ArgsValues, 
 }
 
 func getValue(arg NamedArg, forceInput bool, noInput bool, getter ArgValueGetter) (ArgValue, error) {
-	if arg.Map != nil {
-		return GetValues(arg.Map.Keys, forceInput, noInput, ArgsValues{}, getter)
+	isStringArgWithSingleOption := arg.String != nil && len(arg.String.Values) == 1
+	shouldGet := (forceInput || (!noInput && !arg.NoInput())) && !isStringArgWithSingleOption
+	value := arg.Default()
+	if shouldGet {
+		return getter(arg)
 	} else {
-		value := arg.Default()
-		if (!noInput && !arg.NoInput()) || forceInput {
-			return getter(arg)
-		} else {
-			if arg.NoInput() && value == nil {
-				return nil, fmt.Errorf(`argument "%s" doesn't have default value but marked as "noinput"'`, arg.Name)
-			}
-			return value, nil
+		if arg.NoInput() && value == nil {
+			return nil, fmt.Errorf(`argument "%s" doesn't have default value but marked as "noinput"'`, arg.Name)
 		}
+		return value, nil
 	}
 }
