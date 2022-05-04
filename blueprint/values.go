@@ -15,7 +15,7 @@ func GetValues(args Args, forceInput bool, noInput bool, argsValues ArgsValues, 
 			if value == nil {
 				value = ArgsValues{}
 			}
-			mapValue, err := GetValues(arg.Map.Keys, forceInput, noInput, value.(ArgsValues), getter)
+			mapValue, err := GetValues(arg.Map.Keys, forceInput, noInput || arg.Map.NoInput, value.(ArgsValues), getter)
 			if err != nil {
 				return nil, err
 			}
