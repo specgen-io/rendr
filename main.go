@@ -90,7 +90,7 @@ func CmdRender() *cmdRender {
 	command.Var(&cmd.Overrides, "set", `Set arguments overrides in format "arg=value". Repeat for setting multiple arguments values.`)
 	cmd.ValuesJsonPath = command.String("values", "", `Path to arguments values JSON file.`)
 	cmd.OutPath = command.String("out", ".", `Path to output rendered template.`)
-	cmd.BlueprintPath = command.String("blueprint", "blueprint.yaml", `Path to blueprint file inside of template.`)
+	cmd.BlueprintPath = command.String("blueprint", "rendr.yaml", `Path to blueprint file inside of template.`)
 	cmd.NoInput = command.Bool("noinput", false, `Do not request user input for missing arguments values.`)
 	cmd.ForceInput = command.Bool("forceinput", false, `Force user input requests even for noinput arguments.`)
 	cmd.Help = command.Bool("help", false, `Prints command help.`)
