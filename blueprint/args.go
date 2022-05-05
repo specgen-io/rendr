@@ -67,6 +67,7 @@ type Arg struct {
 	Type        ArgType `yaml:"type"`
 	Description string  `yaml:"description"`
 	NoInput     bool    `yaml:"noinput"`
+	Condition   string  `yaml:"condition"`
 	Bool        *ArgBool
 	String      *ArgString
 	Array       *ArgArray
@@ -170,66 +171,70 @@ type ArgMap struct {
 	Keys Args `yaml:"keys"`
 }
 
-func NamedStringArg(name string, description string, noinput bool, values []string, defaultValue *string) NamedArg {
+func NamedStringArg(name string, description string, noinput bool, condition string, values []string, defaultValue *string) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg:  StringArg(description, noinput, values, defaultValue),
+		Arg:  StringArg(description, noinput, condition, values, defaultValue),
 	}
 }
 
-func StringArg(description string, noinput bool, values []string, defaultValue *string) Arg {
+func StringArg(description string, noinput bool, condition string, values []string, defaultValue *string) Arg {
 	return Arg{
 		Type:        ArgTypeString,
 		Description: description,
 		NoInput:     noinput,
+		Condition:   condition,
 		String:      &ArgString{values, defaultValue},
 	}
 }
 
-func NamedBooleanArg(name string, description string, noinput bool, defaultValue *bool) NamedArg {
+func NamedBooleanArg(name string, description string, noinput bool, condition string, defaultValue *bool) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg:  BooleanArg(description, noinput, defaultValue),
+		Arg:  BooleanArg(description, noinput, condition, defaultValue),
 	}
 }
 
-func BooleanArg(description string, noinput bool, defaultValue *bool) Arg {
+func BooleanArg(description string, noinput bool, condition string, defaultValue *bool) Arg {
 	return Arg{
 		Type:        ArgTypeBoolean,
 		Description: description,
 		NoInput:     noinput,
+		Condition:   condition,
 		Bool:        &ArgBool{defaultValue},
 	}
 }
 
-func NamedArrayArg(name string, description string, noinput bool, values []string, defaultValue []string) NamedArg {
+func NamedArrayArg(name string, description string, noinput bool, condition string, values []string, defaultValue []string) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg:  ArrayArg(description, noinput, values, defaultValue),
+		Arg:  ArrayArg(description, noinput, condition, values, defaultValue),
 	}
 }
 
-func ArrayArg(description string, noinput bool, values []string, defaultValue []string) Arg {
+func ArrayArg(description string, noinput bool, condition string, values []string, defaultValue []string) Arg {
 	return Arg{
 		Type:        ArgTypeArray,
 		Description: description,
 		NoInput:     noinput,
+		Condition:   condition,
 		Array:       &ArgArray{values, defaultValue},
 	}
 }
 
-func NamedMapArg(name string, description string, noinput bool, keys Args) NamedArg {
+func NamedMapArg(name string, description string, noinput bool, condition string, keys Args) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg:  MapArg(description, noinput, keys),
+		Arg:  MapArg(description, noinput, condition, keys),
 	}
 }
 
-func MapArg(description string, noinput bool, keys Args) Arg {
+func MapArg(description string, noinput bool, condition string, keys Args) Arg {
 	return Arg{
 		Type:        ArgTypeMap,
 		Description: description,
 		NoInput:     noinput,
+		Condition:   condition,
 		Map:         &ArgMap{keys},
 	}
 }

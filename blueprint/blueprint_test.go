@@ -38,8 +38,8 @@ args:
 			Name:      "sample blueprint",
 			Title:     "The Sample Blueprint",
 			Args: Args{
-				NamedStringArg("the_arg_1", "the description", false, []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
-				NamedArrayArg("the_arg_2", "the description", false, []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
+				NamedStringArg("the_arg_1", "the description", false, "", []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
+				NamedArrayArg("the_arg_2", "the description", false, "", []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
 			},
 		},
 	},

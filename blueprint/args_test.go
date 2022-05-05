@@ -18,7 +18,7 @@ values:
   - the value 2
 default: the value 1
 `,
-		StringArg("the description", false, []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
+		StringArg("the description", false, "", []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
 	},
 	{
 		"bool arg",
@@ -27,7 +27,7 @@ type: boolean
 description: the description
 default: yes
 `,
-		BooleanArg("the description", false, BoolPtr(true)),
+		BooleanArg("the description", false, "", BoolPtr(true)),
 	},
 	{
 		"array arg",
@@ -42,7 +42,7 @@ default:
   - the value 1
   - the value 2
 `,
-		ArrayArg("the description", false, []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
+		ArrayArg("the description", false, "", []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
 	},
 	{
 		"map arg",
@@ -54,13 +54,9 @@ keys:
     type: string
     description: param description
 `,
-		MapArg(
-			"the description",
-			false,
-			Args{
-				NamedStringArg("param", "param description", false, nil, nil),
-			},
-		),
+		MapArg("the description", false, "", Args{
+			NamedStringArg("param", "param description", false, "", nil, nil),
+		}),
 	},
 }
 
@@ -91,9 +87,9 @@ the_arg_3:
     - the value 2
 `,
 		Args{
-			NamedStringArg("the_arg_1", "the description", false, []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
-			NamedBooleanArg("the_arg_2", "the description", false, BoolPtr(true)),
-			NamedArrayArg("the_arg_3", "the description", false, []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
+			NamedStringArg("the_arg_1", "the description", false, "", []string{"the value 1", "the value 2"}, StrPtr("the value 1")),
+			NamedBooleanArg("the_arg_2", "the description", false, "", BoolPtr(true)),
+			NamedArrayArg("the_arg_3", "the description", false, "", []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
 		},
 	},
 }

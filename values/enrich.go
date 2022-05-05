@@ -6,7 +6,7 @@ import (
 )
 
 func EnrichValues(args blueprint.Args, values ArgsValues) ArgsValues {
-	rootArg := blueprint.NamedMapArg("", "", false, args)
+	rootArg := blueprint.NamedMapArg("", "", false, "", args)
 	value := EnrichValue(&rootArg, values)
 	return value.(ArgsValues)
 }

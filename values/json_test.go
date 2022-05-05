@@ -13,8 +13,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat string args",
 		blueprint.Args{
-			blueprint.NamedStringArg("param1", "", false, nil, nil),
-			blueprint.NamedStringArg("param2", "", false, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param1", "", false, "", nil, nil),
+			blueprint.NamedStringArg("param2", "", false, "", nil, blueprint.StrPtr("the default")),
 		},
 		`{"param1":"value1","param2":"value2"}`,
 		nil,
@@ -23,8 +23,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat boolean args",
 		blueprint.Args{
-			blueprint.NamedBooleanArg("param1", "", false, nil),
-			blueprint.NamedBooleanArg("param2", "", false, blueprint.BoolPtr(true)),
+			blueprint.NamedBooleanArg("param1", "", false, "", nil),
+			blueprint.NamedBooleanArg("param2", "", false, "", blueprint.BoolPtr(true)),
 		},
 		`{"param1":true,"param2":false}`,
 		nil,
@@ -33,7 +33,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat string arg wrong value",
 		blueprint.Args{
-			blueprint.NamedStringArg("param", "", false, nil, nil),
+			blueprint.NamedStringArg("param", "", false, "", nil, nil),
 		},
 		`{"param":123}`,
 		errors.New(`argument "param" should be string`),
@@ -42,7 +42,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"flat string arg null value",
 		blueprint.Args{
-			blueprint.NamedStringArg("param", "", false, nil, nil),
+			blueprint.NamedStringArg("param", "", false, "", nil, nil),
 		},
 		`{"param":null}`,
 		errors.New(`argument "param" should be string`),
@@ -51,7 +51,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"array string arg",
 		blueprint.Args{
-			blueprint.NamedArrayArg("param", "", false, nil, nil),
+			blueprint.NamedArrayArg("param", "", false, "", nil, nil),
 		},
 		`{"param":["value1","value2"]}`,
 		nil,
@@ -60,7 +60,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"array string arg wrong value",
 		blueprint.Args{
-			blueprint.NamedArrayArg("param", "", false, nil, nil),
+			blueprint.NamedArrayArg("param", "", false, "", nil, nil),
 		},
 		`{"param":"should be string array"}`,
 		errors.New(`argument "param" should be array`),
@@ -69,8 +69,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"nested arg",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, blueprint.Args{
-				blueprint.NamedStringArg("nested", "", false, nil, nil),
+			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+				blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 			}),
 		},
 		`{"param":{"nested":"the_value"}}`,
@@ -80,8 +80,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"nested arg wrong value",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, blueprint.Args{
-				blueprint.NamedStringArg("nested", "", false, nil, nil),
+			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+				blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 			}),
 		},
 		`{"param":"the_value"}`,
@@ -91,9 +91,9 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"double nested arg",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, blueprint.Args{
-				blueprint.NamedMapArg("internal", "", false, blueprint.Args{
-					blueprint.NamedStringArg("nested", "", false, nil, nil),
+			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+				blueprint.NamedMapArg("internal", "", false, "", blueprint.Args{
+					blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 				}),
 			}),
 		},

@@ -12,8 +12,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"flat string args",
 		blueprint.Args{
-			blueprint.NamedStringArg("param1", "", false, nil, nil),
-			blueprint.NamedStringArg("param2", "", false, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param1", "", false, "", nil, nil),
+			blueprint.NamedStringArg("param2", "", false, "", nil, blueprint.StrPtr("the default")),
 		},
 		[]string{"param1=value1", "param2=value2"},
 		nil,
@@ -22,8 +22,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"flat bool args",
 		blueprint.Args{
-			blueprint.NamedBooleanArg("param1", "", false, nil),
-			blueprint.NamedBooleanArg("param2", "", false, blueprint.BoolPtr(false)),
+			blueprint.NamedBooleanArg("param1", "", false, "", nil),
+			blueprint.NamedBooleanArg("param2", "", false, "", blueprint.BoolPtr(false)),
 		},
 		[]string{"param1=yes", "param2=true"},
 		nil,
@@ -32,8 +32,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"non existing arg",
 		blueprint.Args{
-			blueprint.NamedStringArg("param1", "", false, nil, nil),
-			blueprint.NamedStringArg("param2", "", false, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param1", "", false, "", nil, nil),
+			blueprint.NamedStringArg("param2", "", false, "", nil, blueprint.StrPtr("the default")),
 		},
 		[]string{"param1=value1", "non_existing=value2"},
 		errors.New(`argument "non_existing" was not found`),
@@ -42,8 +42,8 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"nested arg",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, blueprint.Args{
-				blueprint.NamedStringArg("nested", "", false, nil, nil),
+			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+				blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 			}),
 		},
 		[]string{"param.nested=the_value"},
@@ -53,7 +53,7 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"nested arg is not map",
 		blueprint.Args{
-			blueprint.NamedStringArg("param", "", false, nil, nil),
+			blueprint.NamedStringArg("param", "", false, "", nil, nil),
 		},
 		[]string{"param.nested=the_value"},
 		errors.New(`argument "param" should be map but found string`),
@@ -62,7 +62,7 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"array arg",
 		blueprint.Args{
-			blueprint.NamedArrayArg("param", "", false, nil, nil),
+			blueprint.NamedArrayArg("param", "", false, "", nil, nil),
 		},
 		[]string{"param=value1,value2,value3"},
 		nil,

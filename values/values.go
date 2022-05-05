@@ -13,7 +13,7 @@ type ArgValueGetter func(arg blueprint.NamedArg) (ArgValue, error)
 func GetValues(args blueprint.Args, forceInput bool, noInput bool, argsValues ArgsValues, getter ArgValueGetter) (ArgsValues, error) {
 	values := ArgsValues{}
 	for _, arg := range args {
-		condition, err := getCondition(args, values, "")
+		condition, err := computeCondition(args, values, arg.Condition)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +44,7 @@ func GetValues(args blueprint.Args, forceInput bool, noInput bool, argsValues Ar
 	return values, nil
 }
 
-func getCondition(args blueprint.Args, values ArgsValues, condition string) (bool, error) {
+func computeCondition(args blueprint.Args, values ArgsValues, condition string) (bool, error) {
 	result, err := RenderShort(condition, EnrichValues(args, values))
 	if err != nil {
 		return false, err

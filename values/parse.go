@@ -9,7 +9,7 @@ import (
 )
 
 func ParseValues(args blueprint.Args, values []string) (ArgsValues, error) {
-	rootArg := blueprint.NamedMapArg("", "", false, args)
+	rootArg := blueprint.NamedMapArg("", "", false, "", args)
 	result := ArgsValues{}
 	for _, value := range values {
 		parts := strings.SplitN(value, "=", 2)
