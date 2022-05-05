@@ -10,7 +10,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"string arg",
 		blueprint.Args{
-			blueprint.String("param", "", false, nil, nil),
+			blueprint.NamedStringArg("param", "", false, nil, nil),
 		},
 		ArgsValues{"param": "the value"},
 		ArgsValues{
@@ -20,7 +20,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"boolean arg",
 		blueprint.Args{
-			blueprint.Bool("param", "", false, nil),
+			blueprint.NamedBooleanArg("param", "", false, nil),
 		},
 		ArgsValues{"param": true},
 		ArgsValues{
@@ -30,7 +30,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"string with values arg",
 		blueprint.Args{
-			blueprint.String("param", "", false, []string{"value1", "value2"}, nil),
+			blueprint.NamedStringArg("param", "", false, []string{"value1", "value2"}, nil),
 		},
 		ArgsValues{"param": "value2"},
 		ArgsValues{
@@ -40,7 +40,7 @@ var enrichValues = []EnrichTestCase{
 	{
 		"array string arg",
 		blueprint.Args{
-			blueprint.Array("param", "", false, []string{"value1", "value2", "value3"}, nil),
+			blueprint.NamedArrayArg("param", "", false, []string{"value1", "value2", "value3"}, nil),
 		},
 		ArgsValues{"param": []string{"value1", "value3"}},
 		ArgsValues{

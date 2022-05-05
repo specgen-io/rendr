@@ -64,29 +64,29 @@ type NamedArg struct {
 }
 
 type Arg struct {
-	Bool   *ArgBool
-	String *ArgString
-	Array  *ArgArray
-	Map    *ArgMap
+	Type        ArgType `yaml:"type"`
+	Description string  `yaml:"description"`
+	NoInput     bool    `yaml:"noinput"`
+	Bool        *ArgBool
+	String      *ArgString
+	Array       *ArgArray
+	Map         *ArgMap
 }
 
+type _Arg Arg
+
 func (value *Arg) UnmarshalYAML(node *yaml.Node) error {
-	arg := Arg{}
+	arg := _Arg{}
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "models should be mapping")
 	}
 
-	typ, err := decodeStringOptional(node, "type")
-
+	err := node.DecodeWith(decodeLooze, &arg)
 	if err != nil {
 		return err
 	}
 
-	if typ == nil {
-		yamlError(node, `field "type" is required but missing`)
-	}
-
-	switch *typ {
+	switch arg.Type {
 	case `string`:
 		argString := ArgString{}
 		err := node.DecodeWith(decodeLooze, &argString)
@@ -120,10 +120,10 @@ func (value *Arg) UnmarshalYAML(node *yaml.Node) error {
 		arg.Map = &argMap
 		break
 	default:
-		return yamlError(node, fmt.Sprintf(`unknown argument type: %s`, *typ))
+		return yamlError(node, fmt.Sprintf(`unknown argument type: %s`, arg.Type))
 	}
 
-	*value = arg
+	*value = Arg(arg)
 	return nil
 }
 
@@ -152,80 +152,84 @@ const (
 	ArgTypeMap     ArgType = "map"
 )
 
-func (arg NamedArg) NoInput() bool {
-	if arg.String != nil {
-		return arg.String.NoInput
-	}
-	if arg.Bool != nil {
-		return arg.Bool.NoInput
-	}
-	if arg.Array != nil {
-		return arg.Array.NoInput
-	}
-	if arg.Map != nil {
-		return false
-	}
-	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
-}
-
 type ArgString struct {
-	Description string   `yaml:"description"`
-	NoInput     bool     `yaml:"noinput"`
-	Values      []string `yaml:"values"`
-	Default     *string  `yaml:"default"`
+	Values  []string `yaml:"values"`
+	Default *string  `yaml:"default"`
 }
 
 type ArgArray struct {
-	Description string   `yaml:"description"`
-	NoInput     bool     `yaml:"noinput"`
-	Values      []string `yaml:"values"`
-	Default     []string `yaml:"default"`
+	Values  []string `yaml:"values"`
+	Default []string `yaml:"default"`
 }
 
 type ArgBool struct {
-	Description string `yaml:"description"`
-	NoInput     bool   `yaml:"noinput"`
-	Default     *bool  `yaml:"default"`
+	Default *bool `yaml:"default"`
 }
 
 type ArgMap struct {
-	Description string `yaml:"description"`
-	NoInput     bool   `yaml:"noinput"`
-	Keys        Args   `yaml:"keys"`
+	Keys Args `yaml:"keys"`
 }
 
-func String(name string, description string, noinput bool, values []string, defaultValue *string) NamedArg {
+func NamedStringArg(name string, description string, noinput bool, values []string, defaultValue *string) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg: Arg{
-			String: &ArgString{description, noinput, values, defaultValue},
-		},
+		Arg:  StringArg(description, noinput, values, defaultValue),
 	}
 }
 
-func Bool(name string, description string, noinput bool, defaultValue *bool) NamedArg {
-	return NamedArg{
-		Name: name,
-		Arg: Arg{
-			Bool: &ArgBool{description, noinput, defaultValue},
-		},
+func StringArg(description string, noinput bool, values []string, defaultValue *string) Arg {
+	return Arg{
+		Type:        ArgTypeString,
+		Description: description,
+		NoInput:     noinput,
+		String:      &ArgString{values, defaultValue},
 	}
 }
 
-func Array(name string, description string, noinput bool, values []string, defaultValue []string) NamedArg {
+func NamedBooleanArg(name string, description string, noinput bool, defaultValue *bool) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg: Arg{
-			Array: &ArgArray{description, noinput, values, defaultValue},
-		},
+		Arg:  BooleanArg(description, noinput, defaultValue),
 	}
 }
 
-func Map(name string, description string, noinput bool, keys Args) NamedArg {
+func BooleanArg(description string, noinput bool, defaultValue *bool) Arg {
+	return Arg{
+		Type:        ArgTypeBoolean,
+		Description: description,
+		NoInput:     noinput,
+		Bool:        &ArgBool{defaultValue},
+	}
+}
+
+func NamedArrayArg(name string, description string, noinput bool, values []string, defaultValue []string) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg: Arg{
-			Map: &ArgMap{description, noinput, keys},
-		},
+		Arg:  ArrayArg(description, noinput, values, defaultValue),
+	}
+}
+
+func ArrayArg(description string, noinput bool, values []string, defaultValue []string) Arg {
+	return Arg{
+		Type:        ArgTypeArray,
+		Description: description,
+		NoInput:     noinput,
+		Array:       &ArgArray{values, defaultValue},
+	}
+}
+
+func NamedMapArg(name string, description string, noinput bool, keys Args) NamedArg {
+	return NamedArg{
+		Name: name,
+		Arg:  MapArg(description, noinput, keys),
+	}
+}
+
+func MapArg(description string, noinput bool, keys Args) Arg {
+	return Arg{
+		Type:        ArgTypeMap,
+		Description: description,
+		NoInput:     noinput,
+		Map:         &ArgMap{keys},
 	}
 }

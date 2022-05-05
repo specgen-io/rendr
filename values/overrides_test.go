@@ -11,8 +11,8 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"string arg",
 		blueprint.Args{
-			blueprint.String("param1", "", false, nil, nil),
-			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param1", "", false, nil, nil),
+			blueprint.NamedStringArg("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		ArgsValues{"param1": "the value", "param2": "the default"},
 		ArgsValues{"param2": "the override"},
@@ -21,8 +21,8 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"boolean arg",
 		blueprint.Args{
-			blueprint.Bool("param1", "", false, nil),
-			blueprint.Bool("param2", "", false, blueprint.BoolPtr(false)),
+			blueprint.NamedBooleanArg("param1", "", false, nil),
+			blueprint.NamedBooleanArg("param2", "", false, blueprint.BoolPtr(false)),
 		},
 		ArgsValues{"param1": false, "param2": false},
 		ArgsValues{"param2": true},
@@ -31,8 +31,8 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"string arg new",
 		blueprint.Args{
-			blueprint.String("param1", "", false, nil, nil),
-			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param1", "", false, nil, nil),
+			blueprint.NamedStringArg("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		ArgsValues{"param1": "the value"},
 		ArgsValues{"param2": "the override"},
@@ -41,9 +41,9 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"nested arg",
 		blueprint.Args{
-			blueprint.Map("param", "", false, blueprint.Args{
-				blueprint.String("nested1", "", false, nil, nil),
-				blueprint.String("nested2", "", false, nil, nil),
+			blueprint.NamedMapArg("param", "", false, blueprint.Args{
+				blueprint.NamedStringArg("nested1", "", false, nil, nil),
+				blueprint.NamedStringArg("nested2", "", false, nil, nil),
 			}),
 		},
 		ArgsValues{"param": ArgsValues{"nested1": "the_value"}},
@@ -53,8 +53,8 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"nested arg from nil",
 		blueprint.Args{
-			blueprint.Map("param", "", false, blueprint.Args{
-				blueprint.String("nested", "", false, nil, nil),
+			blueprint.NamedMapArg("param", "", false, blueprint.Args{
+				blueprint.NamedStringArg("nested", "", false, nil, nil),
 			}),
 		},
 		nil,

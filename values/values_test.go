@@ -11,8 +11,8 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"string args",
 		blueprint.Args{
-			blueprint.String("param1", "", false, nil, nil),
-			blueprint.String("param2", "", true, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param1", "", false, nil, nil),
+			blueprint.NamedStringArg("param2", "", true, nil, blueprint.StrPtr("the default")),
 		},
 		false,
 		false,
@@ -22,7 +22,7 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"string arg noinput",
 		blueprint.Args{
-			blueprint.String("param", "", true, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param", "", true, nil, blueprint.StrPtr("the default")),
 		},
 		false,
 		false,
@@ -32,8 +32,8 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"bool args",
 		blueprint.Args{
-			blueprint.Bool("param1", "", false, nil),
-			blueprint.Bool("param2", "", true, blueprint.BoolPtr(false)),
+			blueprint.NamedBooleanArg("param1", "", false, nil),
+			blueprint.NamedBooleanArg("param2", "", true, blueprint.BoolPtr(false)),
 		},
 		false,
 		false,
@@ -43,8 +43,8 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"string args force input",
 		blueprint.Args{
-			blueprint.String("param1", "", false, nil, nil),
-			blueprint.String("param2", "", false, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedStringArg("param1", "", false, nil, nil),
+			blueprint.NamedStringArg("param2", "", false, nil, blueprint.StrPtr("the default")),
 		},
 		true,
 		false,
@@ -54,8 +54,8 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"array args",
 		blueprint.Args{
-			blueprint.Array("param1", "", false, nil, nil),
-			blueprint.Array("param2", "", true, nil, []string{"three", "four"}),
+			blueprint.NamedArrayArg("param1", "", false, nil, nil),
+			blueprint.NamedArrayArg("param2", "", true, nil, []string{"three", "four"}),
 		},
 		false,
 		false,
@@ -65,8 +65,8 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"array args should get",
 		blueprint.Args{
-			blueprint.Array("param1", "", false, nil, nil),
-			blueprint.Array("param2", "", false, nil, []string{"three", "four"}),
+			blueprint.NamedArrayArg("param1", "", false, nil, nil),
+			blueprint.NamedArrayArg("param2", "", false, nil, []string{"three", "four"}),
 		},
 		true,
 		false,
@@ -76,9 +76,9 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"map args",
 		blueprint.Args{
-			blueprint.Map("themap", "", false, blueprint.Args{
-				blueprint.String("param1", "", false, nil, nil),
-				blueprint.String("param2", "", true, nil, blueprint.StrPtr("the default")),
+			blueprint.NamedMapArg("themap", "", false, blueprint.Args{
+				blueprint.NamedStringArg("param1", "", false, nil, nil),
+				blueprint.NamedStringArg("param2", "", true, nil, blueprint.StrPtr("the default")),
 			}),
 		},
 		false,

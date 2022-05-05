@@ -13,12 +13,19 @@ type ArgValueGetter func(arg blueprint.NamedArg) (ArgValue, error)
 func GetValues(args blueprint.Args, forceInput bool, noInput bool, argsValues ArgsValues, getter ArgValueGetter) (ArgsValues, error) {
 	values := ArgsValues{}
 	for _, arg := range args {
+		condition, err := getCondition(args, values, "")
+		if err != nil {
+			return nil, err
+		}
+		if !condition {
+			continue
+		}
 		value, _ := argsValues[arg.Name]
 		if arg.Map != nil {
 			if value == nil {
 				value = ArgsValues{}
 			}
-			mapValue, err := GetValues(arg.Map.Keys, forceInput, noInput || arg.Map.NoInput, value.(ArgsValues), getter)
+			mapValue, err := GetValues(arg.Map.Keys, forceInput, noInput || arg.NoInput, value.(ArgsValues), getter)
 			if err != nil {
 				return nil, err
 			}
@@ -37,14 +44,22 @@ func GetValues(args blueprint.Args, forceInput bool, noInput bool, argsValues Ar
 	return values, nil
 }
 
+func getCondition(args blueprint.Args, values ArgsValues, condition string) (bool, error) {
+	result, err := RenderShort(condition, EnrichValues(args, values))
+	if err != nil {
+		return false, err
+	}
+	return result != nil, nil
+}
+
 func getValue(arg blueprint.NamedArg, forceInput bool, noInput bool, getter ArgValueGetter) (ArgValue, error) {
 	isStringArgWithSingleOption := arg.String != nil && len(arg.String.Values) == 1
-	shouldGet := (forceInput || (!noInput && !arg.NoInput())) && !isStringArgWithSingleOption
+	shouldGet := (forceInput || (!noInput && !arg.NoInput)) && !isStringArgWithSingleOption
 	value := defaultValue(arg)
 	if shouldGet {
 		return getter(arg)
 	} else {
-		if arg.NoInput() && value == nil {
+		if arg.NoInput && value == nil {
 			return nil, fmt.Errorf(`argument "%s" doesn't have default value but marked as "noinput"'`, arg.Name)
 		}
 		return value, nil

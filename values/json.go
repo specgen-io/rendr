@@ -9,7 +9,7 @@ import (
 )
 
 func ValidateValues(args blueprint.Args, values map[string]interface{}) (ArgsValues, error) {
-	rootArg := blueprint.Map("", "", false, args)
+	rootArg := blueprint.NamedMapArg("", "", false, args)
 	value, err := ValidateValue([]string{}, &rootArg, values)
 	if err != nil {
 		return nil, err

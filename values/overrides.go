@@ -8,7 +8,7 @@ import (
 )
 
 func OverrideValues(args blueprint.Args, values, overrides ArgsValues) (ArgsValues, error) {
-	rootArg := blueprint.Map("", "", false, args)
+	rootArg := blueprint.NamedMapArg("", "", false, args)
 	value, err := OverrideValue([]string{}, &rootArg, values, overrides)
 	if err != nil {
 		return nil, err
