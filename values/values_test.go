@@ -76,7 +76,7 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"map args",
 		blueprint.Args{
-			blueprint.NamedMapArg("themap", "", false, "", blueprint.Args{
+			blueprint.NamedGroupArg("themap", "", false, "", blueprint.Args{
 				blueprint.NamedStringArg("param1", "", false, "", nil, nil),
 				blueprint.NamedStringArg("param2", "", true, "", nil, blueprint.StrPtr("the default")),
 			}),

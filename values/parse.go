@@ -9,7 +9,7 @@ import (
 )
 
 func ParseValues(args blueprint.Args, values []string) (ArgsValues, error) {
-	rootArg := blueprint.NamedMapArg("", "", false, "", args)
+	rootArg := blueprint.NamedGroupArg("", "", false, "", args)
 	result := ArgsValues{}
 	for _, value := range values {
 		parts := strings.SplitN(value, "=", 2)
@@ -31,7 +31,7 @@ func setValue(arg *blueprint.NamedArg, argsValues ArgsValues, path []string, arg
 		if arg.Map == nil {
 			return errors.New(fmt.Sprintf(`argument "%s" should be map but found %s`, strings.Join(path[:pathIndex], "."), arg.Type()))
 		}
-		nextArg := arg.Map.Keys.FindByName(argName)
+		nextArg := arg.Map.Args.FindByName(argName)
 		if nextArg == nil {
 			return errors.New(fmt.Sprintf(`argument "%s" was not found`, strings.Join(path[:pathIndex+1], ".")))
 		}
@@ -45,7 +45,7 @@ func setValue(arg *blueprint.NamedArg, argsValues ArgsValues, path []string, arg
 			if arg.String != nil {
 				currentValues[argName] = argValue
 			}
-			if arg.Bool != nil {
+			if arg.Boolean != nil {
 				boolValue, err := parseBoolean(argValue)
 				if err != nil {
 					return err

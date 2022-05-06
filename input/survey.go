@@ -12,7 +12,7 @@ func Survey(arg blueprint.NamedArg) (values.ArgValue, error) {
 	if arg.String != nil {
 		return getString(arg)
 	}
-	if arg.Bool != nil {
+	if arg.Boolean != nil {
 		return getBool(arg)
 	}
 	if arg.Array != nil {
@@ -23,8 +23,8 @@ func Survey(arg blueprint.NamedArg) (values.ArgValue, error) {
 
 func getBool(arg blueprint.NamedArg) (values.ArgValue, error) {
 	defaultValue := true
-	if arg.Bool.Default != nil {
-		defaultValue = *arg.Bool.Default
+	if arg.Boolean.Default != nil {
+		defaultValue = *arg.Boolean.Default
 	}
 	message := fmt.Sprintf(`%s:`, arg.Description)
 	value := false

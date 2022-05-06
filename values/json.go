@@ -9,7 +9,7 @@ import (
 )
 
 func ValidateValues(args blueprint.Args, values map[string]interface{}) (ArgsValues, error) {
-	rootArg := blueprint.NamedMapArg("", "", false, "", args)
+	rootArg := blueprint.NamedGroupArg("", "", false, "", args)
 	value, err := ValidateValue([]string{}, &rootArg, values)
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (i
 		}
 		return stringValue, nil
 	}
-	if arg.Bool != nil {
+	if arg.Boolean != nil {
 		boolValue, isBool := value.(bool)
 		if !isBool {
 			return nil, errors.New(fmt.Sprintf(`argument "%s" should be boolean`, strings.Join(path, ".")))
@@ -50,7 +50,7 @@ func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (i
 		}
 		values := ArgsValues{}
 		for nestedArgName, nestedArgValue := range mapValues {
-			nestedArg := arg.Map.Keys.FindByName(nestedArgName)
+			nestedArg := arg.Map.Args.FindByName(nestedArgName)
 			nestedPath := append(path, nestedArg.Name)
 			nestedValue, err := ValidateValue(nestedPath, nestedArg, nestedArgValue)
 			if err != nil {

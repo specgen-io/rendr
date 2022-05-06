@@ -42,7 +42,7 @@ var casesParseValues = []ParseValuesTestCase{
 	{
 		"nested arg",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+			blueprint.NamedGroupArg("param", "", false, "", blueprint.Args{
 				blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 			}),
 		},

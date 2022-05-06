@@ -30,7 +30,7 @@ func (arr PathArray) Contains(value string) bool {
 }
 
 type Blueprint struct {
-	Blueprint       string            `yaml:"blueprint"`
+	Blueprint       string            `yaml:"rendr"`
 	Name            string            `yaml:"name"`
 	Title           string            `yaml:"title"`
 	Roots           []string          `yaml:"roots"`

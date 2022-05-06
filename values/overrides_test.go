@@ -41,7 +41,7 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"nested arg",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+			blueprint.NamedGroupArg("param", "", false, "", blueprint.Args{
 				blueprint.NamedStringArg("nested1", "", false, "", nil, nil),
 				blueprint.NamedStringArg("nested2", "", false, "", nil, nil),
 			}),
@@ -53,7 +53,7 @@ var casesOverrideValues = []OverrideValuesTestCase{
 	{
 		"nested arg from nil",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+			blueprint.NamedGroupArg("param", "", false, "", blueprint.Args{
 				blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 			}),
 		},

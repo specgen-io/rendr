@@ -25,7 +25,7 @@ func GetValues(args blueprint.Args, forceInput bool, noInput bool, argsValues Ar
 			if value == nil {
 				value = ArgsValues{}
 			}
-			mapValue, err := GetValues(arg.Map.Keys, forceInput, noInput || arg.NoInput, value.(ArgsValues), getter)
+			mapValue, err := GetValues(arg.Map.Args, forceInput, noInput || arg.NoInput, value.(ArgsValues), getter)
 			if err != nil {
 				return nil, err
 			}
@@ -73,9 +73,9 @@ func defaultValue(arg blueprint.NamedArg) ArgValue {
 		}
 		return nil
 	}
-	if arg.Bool != nil {
-		if arg.Bool.Default != nil {
-			return *arg.Bool.Default
+	if arg.Boolean != nil {
+		if arg.Boolean.Default != nil {
+			return *arg.Boolean.Default
 		}
 		return nil
 	}

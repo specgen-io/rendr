@@ -11,7 +11,7 @@ var casesBlueprintUnmarshal = []BlueprintUnmarshalTestCase{
 	{
 		"blueprint with args",
 		`
-blueprint: 0
+rendr: 0
 name: sample blueprint
 title: The Sample Blueprint
 args:

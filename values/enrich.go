@@ -6,7 +6,7 @@ import (
 )
 
 func EnrichValues(args blueprint.Args, values ArgsValues) ArgsValues {
-	rootArg := blueprint.NamedMapArg("", "", false, "", args)
+	rootArg := blueprint.NamedGroupArg("", "", false, "", args)
 	value := EnrichValue(&rootArg, values)
 	return value.(ArgsValues)
 }
@@ -16,7 +16,7 @@ func EnrichValue(arg *blueprint.NamedArg, value interface{}) interface{} {
 		stringValue, _ := value.(string)
 		return packStringValue(arg.String.Values, stringValue)
 	}
-	if arg.Bool != nil {
+	if arg.Boolean != nil {
 		boolValue, _ := value.(bool)
 		return packBoolValue(boolValue)
 	}
@@ -28,7 +28,7 @@ func EnrichValue(arg *blueprint.NamedArg, value interface{}) interface{} {
 		mapValues, _ := value.(ArgsValues)
 		values := ArgsValues{}
 		for nestedArgName, nestedArgValue := range mapValues {
-			nestedArg := arg.Map.Keys.FindByName(nestedArgName)
+			nestedArg := arg.Map.Args.FindByName(nestedArgName)
 			nestedValue := EnrichValue(nestedArg, nestedArgValue)
 			values[nestedArg.Name] = nestedValue
 		}

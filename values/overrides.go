@@ -8,7 +8,7 @@ import (
 )
 
 func OverrideValues(args blueprint.Args, values, overrides ArgsValues) (ArgsValues, error) {
-	rootArg := blueprint.NamedMapArg("", "", false, "", args)
+	rootArg := blueprint.NamedGroupArg("", "", false, "", args)
 	value, err := OverrideValue([]string{}, &rootArg, values, overrides)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func OverrideValue(path []string, arg *blueprint.NamedArg, value, override ArgVa
 		}
 		return stringValue, nil
 	}
-	if arg.Bool != nil {
+	if arg.Boolean != nil {
 		boolValue, isBool := override.(bool)
 		if !isBool {
 			return nil, errors.New(fmt.Sprintf(`argument "%s" should be boolean`, strings.Join(path, ".")))
@@ -54,7 +54,7 @@ func OverrideValue(path []string, arg *blueprint.NamedArg, value, override ArgVa
 		}
 
 		for nestedArgName, nestedOverrideValue := range mapOverrides {
-			nestedArg := arg.Map.Keys.FindByName(nestedArgName)
+			nestedArg := arg.Map.Args.FindByName(nestedArgName)
 			if nestedArg == nil {
 				return nil, errors.New(``)
 			}

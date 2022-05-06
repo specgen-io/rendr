@@ -68,10 +68,10 @@ type Arg struct {
 	Description string  `yaml:"description"`
 	NoInput     bool    `yaml:"noinput"`
 	Condition   string  `yaml:"condition"`
-	Bool        *ArgBool
+	Boolean     *ArgBoolean
 	String      *ArgString
 	Array       *ArgArray
-	Map         *ArgMap
+	Map         *ArgGroup
 }
 
 type _Arg Arg
@@ -88,7 +88,7 @@ func (value *Arg) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	switch arg.Type {
-	case `string`:
+	case ArgTypeString:
 		argString := ArgString{}
 		err := node.DecodeWith(decodeLooze, &argString)
 		if err != nil {
@@ -96,15 +96,15 @@ func (value *Arg) UnmarshalYAML(node *yaml.Node) error {
 		}
 		arg.String = &argString
 		break
-	case `boolean`:
-		argBool := ArgBool{}
+	case ArgTypeBoolean:
+		argBool := ArgBoolean{}
 		err := node.DecodeWith(decodeLooze, &argBool)
 		if err != nil {
 			return err
 		}
-		arg.Bool = &argBool
+		arg.Boolean = &argBool
 		break
-	case `array`:
+	case ArgTypeArray:
 		argArray := ArgArray{}
 		err := node.DecodeWith(decodeLooze, &argArray)
 		if err != nil {
@@ -112,8 +112,8 @@ func (value *Arg) UnmarshalYAML(node *yaml.Node) error {
 		}
 		arg.Array = &argArray
 		break
-	case `map`:
-		argMap := ArgMap{}
+	case ArgTypeGroup:
+		argMap := ArgGroup{}
 		err := node.DecodeWith(decodeLooze, &argMap)
 		if err != nil {
 			return err
@@ -132,14 +132,14 @@ func (arg *NamedArg) Type() ArgType {
 	if arg.String != nil {
 		return ArgTypeString
 	}
-	if arg.Bool != nil {
+	if arg.Boolean != nil {
 		return ArgTypeBoolean
 	}
 	if arg.Array != nil {
 		return ArgTypeArray
 	}
 	if arg.Map != nil {
-		return ArgTypeMap
+		return ArgTypeGroup
 	}
 	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
 }
@@ -150,7 +150,7 @@ const (
 	ArgTypeString  ArgType = "string"
 	ArgTypeBoolean ArgType = "boolean"
 	ArgTypeArray   ArgType = "array"
-	ArgTypeMap     ArgType = "map"
+	ArgTypeGroup   ArgType = "group"
 )
 
 type ArgString struct {
@@ -163,12 +163,12 @@ type ArgArray struct {
 	Default []string `yaml:"default"`
 }
 
-type ArgBool struct {
+type ArgBoolean struct {
 	Default *bool `yaml:"default"`
 }
 
-type ArgMap struct {
-	Keys Args `yaml:"keys"`
+type ArgGroup struct {
+	Args Args `yaml:"args"`
 }
 
 func NamedStringArg(name string, description string, noinput bool, condition string, values []string, defaultValue *string) NamedArg {
@@ -201,7 +201,7 @@ func BooleanArg(description string, noinput bool, condition string, defaultValue
 		Description: description,
 		NoInput:     noinput,
 		Condition:   condition,
-		Bool:        &ArgBool{defaultValue},
+		Boolean:     &ArgBoolean{defaultValue},
 	}
 }
 
@@ -222,19 +222,19 @@ func ArrayArg(description string, noinput bool, condition string, values []strin
 	}
 }
 
-func NamedMapArg(name string, description string, noinput bool, condition string, keys Args) NamedArg {
+func NamedGroupArg(name string, description string, noinput bool, condition string, keys Args) NamedArg {
 	return NamedArg{
 		Name: name,
-		Arg:  MapArg(description, noinput, condition, keys),
+		Arg:  GroupArg(description, noinput, condition, keys),
 	}
 }
 
-func MapArg(description string, noinput bool, condition string, keys Args) Arg {
+func GroupArg(description string, noinput bool, condition string, keys Args) Arg {
 	return Arg{
-		Type:        ArgTypeMap,
+		Type:        ArgTypeGroup,
 		Description: description,
 		NoInput:     noinput,
 		Condition:   condition,
-		Map:         &ArgMap{keys},
+		Map:         &ArgGroup{keys},
 	}
 }

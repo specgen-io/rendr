@@ -69,7 +69,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"nested arg",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+			blueprint.NamedGroupArg("param", "", false, "", blueprint.Args{
 				blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 			}),
 		},
@@ -80,7 +80,7 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"nested arg wrong value",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
+			blueprint.NamedGroupArg("param", "", false, "", blueprint.Args{
 				blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 			}),
 		},
@@ -91,8 +91,8 @@ var casesReadValuesJson = []ReadValuesJsonTestCase{
 	{
 		"double nested arg",
 		blueprint.Args{
-			blueprint.NamedMapArg("param", "", false, "", blueprint.Args{
-				blueprint.NamedMapArg("internal", "", false, "", blueprint.Args{
+			blueprint.NamedGroupArg("param", "", false, "", blueprint.Args{
+				blueprint.NamedGroupArg("internal", "", false, "", blueprint.Args{
 					blueprint.NamedStringArg("nested", "", false, "", nil, nil),
 				}),
 			}),

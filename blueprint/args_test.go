@@ -45,16 +45,16 @@ default:
 		ArrayArg("the description", false, "", []string{"the value 1", "the value 2", "the value 3"}, []string{"the value 1", "the value 2"}),
 	},
 	{
-		"map arg",
+		"group",
 		`
-type: map
+type: group
 description: the description
-keys:
+args:
   param:
     type: string
     description: param description
 `,
-		MapArg("the description", false, "", Args{
+		GroupArg("the description", false, "", Args{
 			NamedStringArg("param", "param description", false, "", nil, nil),
 		}),
 	},
