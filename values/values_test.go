@@ -89,13 +89,26 @@ var casesGetValues = []GetValuesTestCase{
 	{
 		"conditional arg",
 		blueprint.Args{
-			blueprint.NamedBooleanArg("param1", "", false, "", BoolPtr(false)),
+			blueprint.NamedBooleanArg("param1", "", true, "", BoolPtr(true)),
 			blueprint.NamedStringArg("param2", "", false, "{{#param1.value}}", nil, nil),
+			blueprint.NamedStringArg("param3", "", false, "{{^param1.value}}", nil, nil),
 		},
 		false,
 		false,
 		HardcodedGetter("the value"),
-		ArgsValues{"param1": "the value"},
+		ArgsValues{"param1": true, "param2": "the value"},
+	},
+	{
+		"conditional arg removed",
+		blueprint.Args{
+			blueprint.NamedBooleanArg("param1", "", true, "", BoolPtr(false)),
+			blueprint.NamedStringArg("param2", "", false, "{{#param1.value}}", nil, nil),
+			blueprint.NamedStringArg("param3", "", false, "{{^param1.value}}", nil, nil),
+		},
+		false,
+		false,
+		HardcodedGetter("the value"),
+		ArgsValues{"param1": false, "param3": "the value"},
 	},
 }
 

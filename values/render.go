@@ -16,9 +16,8 @@ func Render(template string, argsValues ArgsValues) (string, error) {
 }
 
 func RenderShort(template string, argsValues ArgsValues) (*string, error) {
-	if strings.HasPrefix(template, "{{#") {
+	if strings.HasPrefix(template, "{{#") || strings.HasPrefix(template, "{{^") {
 		closeIndex := strings.Index(template, "}}")
-		// if closeIndex == -1
 		formula := template[:closeIndex+2]
 		internal := template[closeIndex+2:]
 		if internal == "" {
