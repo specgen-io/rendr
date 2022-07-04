@@ -1,5 +1,8 @@
 name: Build and Test
-on: [push]
+on:
+  push: {}
+  workflow_dispatch: {}
+
 env:
   MAJOR_MINOR: '0.0'
 jobs:
