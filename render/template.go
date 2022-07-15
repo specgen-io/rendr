@@ -134,7 +134,7 @@ func getFiles(filesystem billy.Filesystem, rootFullPath string, excludePrefixes 
 				return nil
 			}
 			executable := executablePaths.Contains(filepath)
-			static := staticPaths.Contains(filepath)
+			static := staticPaths.Matches(filepath)
 			template := !executable && !static
 			file := File{filepath, string(data), executable, template}
 			result = append(result, file)
