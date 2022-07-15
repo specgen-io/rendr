@@ -35,6 +35,7 @@ type Blueprint struct {
 	Title           string            `yaml:"title"`
 	Roots           []string          `yaml:"roots"`
 	Args            Args              `yaml:"args"`
+	StaticPaths     PathArray         `yaml:"static"`
 	IgnorePaths     PathArray         `yaml:"ignore"`
 	ExecutablePaths PathArray         `yaml:"executables"`
 	Rename          map[string]string `yaml:"rename"`

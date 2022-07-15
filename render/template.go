@@ -74,7 +74,7 @@ func (t Template) RenderRoot(
 	argsValues values.ArgsValues) ([]File, error) {
 
 	renderFullPath := path.Join(t.Path, root)
-	templateFiles, err := getFiles(filesystem, renderFullPath, blueprint.IgnorePaths, blueprint.ExecutablePaths)
+	templateFiles, err := getFiles(filesystem, renderFullPath, blueprint.IgnorePaths, blueprint.ExecutablePaths, blueprint.StaticPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func getFilesystem(repoUrl string) (billy.Filesystem, error) {
 	}
 }
 
-func getFiles(filesystem billy.Filesystem, rootFullPath string, excludePrefixes blueprint.PathArray, executableFiles blueprint.PathArray) ([]File, error) {
+func getFiles(filesystem billy.Filesystem, rootFullPath string, excludePrefixes blueprint.PathArray, executablePaths blueprint.PathArray, staticPaths blueprint.PathArray) ([]File, error) {
 	result := []File{}
 	err := Walk(filesystem, rootFullPath, func(itempath string, info fs.FileInfo, err error) error {
 		filepath := strings.TrimPrefix(strings.TrimPrefix(itempath, rootFullPath), "/")
@@ -133,7 +133,10 @@ func getFiles(filesystem billy.Filesystem, rootFullPath string, excludePrefixes 
 			if err != nil {
 				return nil
 			}
-			file := File{filepath, string(data), executableFiles.Contains(filepath)}
+			executable := executablePaths.Contains(filepath)
+			static := staticPaths.Contains(filepath)
+			template := !executable && !static
+			file := File{filepath, string(data), executable, template}
 			result = append(result, file)
 		}
 		return nil
@@ -144,24 +147,24 @@ func getFiles(filesystem billy.Filesystem, rootFullPath string, excludePrefixes 
 	return result, nil
 }
 
-func renderFile(templateFile *File, argsValues values.ArgsValues) (*File, error) {
-	templatePath := templateFile.Path
-
-	renderedPath, err := renderPath(templatePath, argsValues)
+func renderFile(sourceFile *File, argsValues values.ArgsValues) (*File, error) {
+	renderedPath, err := renderPath(sourceFile.Path, argsValues)
 	if err != nil {
 		return nil, err
 	}
-
 	if renderedPath == nil {
 		return nil, nil
 	}
 
-	content, err := values.Render(templateFile.Content, argsValues)
-	if err != nil {
-		return nil, err
+	content := sourceFile.Content
+	if sourceFile.Template {
+		content, err = values.Render(content, argsValues)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return &File{*renderedPath, content, templateFile.Executable}, nil
+	return &File{*renderedPath, content, sourceFile.Executable, false}, nil
 }
 
 func renderFiles(templateFiles []File, argsValues values.ArgsValues) ([]File, error) {

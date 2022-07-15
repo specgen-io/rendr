@@ -12,6 +12,7 @@ type File struct {
 	Path       string
 	Content    string
 	Executable bool
+	Template   bool
 }
 
 type Files []File
