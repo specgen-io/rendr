@@ -56,7 +56,8 @@ rendr render github.com/specgen-io/rendr examples/simple
 Template could be sourced from the local file system:
 
 ```bash
-rendr render file:///some_path/rendr-example  # note that the path after file:/// should exist 
+rendr render file:///some_path/rendr-example 
+#                    ^ this path should exist 
 ```
 
 You can find more about command line interface in [Rendr Command Line](#rendr-command-line) section.
@@ -106,7 +107,7 @@ rendr: 0
 name: example
 title: Example template
 
-args:                     # templates arguments
+args:             # templates arguments
   foo:
     type: string
   bar:
@@ -121,8 +122,8 @@ Blueprint:
 args:
   foo:
     type: string
-    description: the foo          # human-readable description of the argument
-    default: foo value            # whenever value is not provided this value will be used for the argument
+    description: the foo   # human-readable description of the argument
+    default: foo value     # default value for the argument
   bar:
     type: boolean
     description: the bar
@@ -142,7 +143,8 @@ args:
   baz:
     type: boolean
     description: the baz
-    values: [blip, blop, clunk]   # only these values could be set as baz argument value
+    values: [blip, blop, clunk]
+#           ^ only these values could be set as baz value
 ```
 
 If `values` are set for the argument then additional members are available in the template besides `.value` (which has the raw value for the argument).
@@ -322,8 +324,10 @@ args:
 ```
 Canonical Mustache syntax:
 ```
-/{{#build.maven}}pom.xml{{/build.maven}}          # this included only if argument build has maven value
-/{{#build.gradle}}build.gradle{{/build.gradle}}   # this included only if argument build has gradle value
+/{{#build.maven}}pom.xml{{/build.maven}}
+#                ^ this file is included only if argument build equals "maven"
+/{{#build.gradle}}build.gradle{{/build.gradle}}
+#                 ^ this file is included only if argument build equals "gradle"
 ```
 Short syntax:
 ```
@@ -335,10 +339,10 @@ If for whatever reason the name of folder is rendered to empty string then such 
 The example above could be designed using "empty" folder names:
 Short syntax:
 ```
-/{{#build.maven}}
-    /pom.xml         # this included only if argument build has maven value
-/{{#build.gradle}}
-    /build.gradle    # this included only if argument build has maven value
+/{{#build.maven}}   # this folder is included and inlined only if build equals "maven"
+    pom.xml
+/{{#build.gradle}}  # this folder is included and inlined only if build equals "gradle"
+    build.gradle
 ```
 
 ### Additional Blueprint Features
@@ -392,7 +396,7 @@ Alternatively rendr binary could be downloaded from [repository releases](https:
 Here's a simple usage example:
 ```bash
 rendr render github.com/specgen-io/rendr examples/simple
-#            ^ repo with template        ^ optional path to the template inside of the repo
+#            ^ repo with template        ^ path to the template inside of the repo
 ```
 
 ### Arguments via Input
@@ -466,8 +470,12 @@ args:
 
 Command:
 ```bash
-rendr render -set foo="the foo" -set bar="the bar" -set versions.foo="1.0" -set versions.bar="2.0" github.com/specgen-io/rendr examples/simple
-#            ^ set foo argument value              ^ set option can be used multiple times
+rendr render \
+  -set foo="the foo" \  # set foo argument value
+  -set bar="the bar" \  # set option can be used multiple times
+  -set versions.foo="1.0" \
+  -set versions.bar="2.0" \
+  github.com/specgen-io/rendr examples/simple
 ```
 
 Note how grouped arguments are set by their full names: `versions.foo` and `versions.bar`.
