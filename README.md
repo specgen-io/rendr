@@ -12,10 +12,10 @@ The really usable templating tool:
 
 The rendr tool could be used for creating similar projects from parametrized templates.
 
-Often organizations have a need to unify similar projects abd that could be achieved with rendr.
+Often organizations have a need to unify similar projects and that could be achieved with rendr.
 
 Any framework requires initial project setup, such a setup could be automated via templates.
-Many build tools provide ability to create project from templates (like `npm new` or `sbt new`) however they are tech-stack specific and do not exist for all tech ctacks.
+Many build tools provide ability to create project from templates (like `npm new` or `sbt new`) however they are tech-stack specific and do not exist for all tech stacks.
 
 The rendr tool provides convenince for both automation and developers via utilizing command line arguments and user console input.
 
@@ -114,7 +114,7 @@ args:                     # templates arguments
 ```
 
 Arguments can have `description` which is used for user input whenever argument should be provided by the user.
-The `default` value might be set to the argument and this value will be used in case if override value is not provided.
+The `default` value might be set to the argument and this value will be used in case override value is not provided.
 
 Blueprint:
 ```yaml
