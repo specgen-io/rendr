@@ -137,7 +137,7 @@ func (command *cmdRender) Execute(arguments []string) {
 		path = command.Cmd.Arg(1)
 	}
 
-	if strings.HasPrefix(templateUrl, "github") {
+	if strings.HasPrefix(templateUrl, "github.com") {
 		templateUrl = fmt.Sprintf(`https://%s.git`, templateUrl)
 	}
 
