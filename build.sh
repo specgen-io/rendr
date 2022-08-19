@@ -7,23 +7,30 @@ fi
 
 echo "Building version: $VERSION"
 
+NAME="rendr"
 
-env GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o ./dist/windows_amd64/rendr.exe main.go
-if [ $? -ne 0 ]; then
-    echo 'An error has occurred! Aborting the script execution...'
-    exit 1
-fi
+build()
+{
+  GOOS=$1
+  GOARCH=$2
 
-env GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o ./dist/darwin_amd64/rendr main.go
-if [ $? -ne 0 ]; then
-    echo 'An error has occurred! Aborting the script execution...'
-    exit 1
-fi
+  EXECNAME=${NAME}
+  if [[ $GOOS == windows ]]; then
+    EXECNAME=${NAME}.exe
+  fi
 
-env GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o ./dist/linux_amd64/rendr main.go
-if [ $? -ne 0 ]; then
-    echo 'An error has occurred! Aborting the script execution...'
-    exit 1
-fi
+  echo "Building ${GOOS}_${GOARCH}/${EXECNAME}"
+  env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o ./dist/${GOOS}_${GOARCH}/${EXECNAME} main.go
+  if [ $? -ne 0 ]; then
+      echo "An error has occurred while building ${GOOS}_${GOARCH}/${EXECNAME}! Aborting the script execution..."
+      exit 1
+  fi
+  echo 'Successfully built'
+}
+
+build windows amd64
+build darwin amd64
+build darwin arm64
+build linux amd64
 
 echo "Done building version: $VERSION"

@@ -33,6 +33,7 @@ fi
 
 
 zip "./rendr_darwin_amd64.zip" "./dist/darwin_amd64/rendr" -q -j
+zip "./rendr_darwin_arm64.zip" "./dist/darwin_arm64/rendr" -q -j
 zip "./rendr_linux_amd64.zip" "./dist/linux_amd64/rendr" -q -j
 zip "./rendr_windows_amd64.zip" "./dist/windows_amd64/rendr.exe" -q -j
 
@@ -51,6 +52,8 @@ sleep 10
 
 echo "Releasing rendr_darwin_amd64.zip"
 $GOPATH/bin/github-release upload --replace --security-token $GITHUB_TOKEN --user specgen-io --repo rendr --tag $RELEASE_NAME --name rendr_darwin_amd64.zip  --file rendr_darwin_amd64.zip
+echo "Releasing rendr_darwin_arm64.zip"
+$GOPATH/bin/github-release upload --replace --security-token $GITHUB_TOKEN --user specgen-io --repo rendr --tag $RELEASE_NAME --name rendr_darwin_arm64  --file rendr_darwin_arm64.zip
 echo "Releasing rendr_linux_amd64.zip"
 $GOPATH/bin/github-release upload --replace --security-token $GITHUB_TOKEN --user specgen-io --repo rendr --tag $RELEASE_NAME --name rendr_linux_amd64.zip   --file rendr_linux_amd64.zip
 echo "Releasing rendr_windows_amd64.zip"
@@ -63,12 +66,14 @@ ARTFACTORY_URL="https://specgen.jfrog.io/artifactory/binaries/rendr"
 echo "Releasing to Artifactory: $ARTFACTORY_URL/latest"
 
 curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/latest/rendr_darwin_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_arm64.zip "$ARTFACTORY_URL/latest/rendr_darwin_arm64.zip"
 curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/latest/rendr_linux_amd64.zip"
 curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/latest/rendr_windows_amd64.zip"
 
 echo "Releasing to Artifactory: $ARTFACTORY_URL/$RELEASE_NAME"
 
 curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_darwin_amd64.zip"
+curl -u$JFROG_USER:$JFROG_PASS -T rendr_darwin_arm64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_darwin_arm64.zip"
 curl -u$JFROG_USER:$JFROG_PASS -T rendr_linux_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_linux_amd64.zip"
 curl -u$JFROG_USER:$JFROG_PASS -T rendr_windows_amd64.zip "$ARTFACTORY_URL/$RELEASE_NAME/rendr_windows_amd64.zip"
 
