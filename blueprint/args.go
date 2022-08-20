@@ -74,6 +74,13 @@ type Arg struct {
 	Map         *ArgGroup
 }
 
+func (a *NamedArg) InputMessage() string {
+	if a.Description == "" {
+		return a.Name
+	}
+	return a.Description
+}
+
 type _Arg Arg
 
 func (value *Arg) UnmarshalYAML(node *yaml.Node) error {

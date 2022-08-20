@@ -26,7 +26,7 @@ func getBool(arg blueprint.NamedArg) (values.ArgValue, error) {
 	if arg.Boolean.Default != nil {
 		defaultValue = *arg.Boolean.Default
 	}
-	message := fmt.Sprintf(`%s:`, arg.Description)
+	message := fmt.Sprintf(`%s:`, arg.InputMessage())
 	value := false
 	prompt := &survey.Confirm{
 		Message: message,
@@ -41,7 +41,7 @@ func getString(arg blueprint.NamedArg) (values.ArgValue, error) {
 	if arg.String.Default != nil {
 		defaultValue = *arg.String.Default
 	}
-	message := fmt.Sprintf(`%s:`, arg.Description)
+	message := fmt.Sprintf(`%s:`, arg.InputMessage())
 	value := ""
 	var prompt survey.Prompt = nil
 	if arg.String.Values != nil {
@@ -61,7 +61,7 @@ func getString(arg blueprint.NamedArg) (values.ArgValue, error) {
 }
 
 func getArray(arg blueprint.NamedArg) (values.ArgValue, error) {
-	message := fmt.Sprintf(`%s:`, arg.Description)
+	message := fmt.Sprintf(`%s:`, arg.InputMessage())
 	value := []string{}
 	prompt := &survey.MultiSelect{
 		Message: message,
