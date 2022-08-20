@@ -1,0 +1,5 @@
+This file is in the nested folder.
+
+Here are values of templates arguments:
+The foo value: {{foo.value}}
+The bar value: {{bar.value}}

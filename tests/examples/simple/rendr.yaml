@@ -1,0 +1,9 @@
+rendr: 0
+name: simple
+title: Simple example template
+
+args:
+  foo:
+    type: string
+  bar:
+    type: boolean

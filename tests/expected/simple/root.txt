@@ -1,0 +1,8 @@
+This file is at the root folder.
+
+Here are values of templates arguments.
+The foo value: the foo
+The bar value: true
+
+Let's test conditions as well:
+This line will be here if bar is true.
