@@ -3,7 +3,7 @@ package values
 import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/specgen-io/rendr/blueprint"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 	"testing"
 )
 

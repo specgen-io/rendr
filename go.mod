@@ -10,7 +10,7 @@ require (
 	github.com/google/go-cmp v0.5.7
 	github.com/pkg/errors v0.9.1
 	gopkg.in/specgen-io/yaml.v3 v3.0.0-20211212030207-33c98a79c251
-	gotest.tools v2.2.0+incompatible
+	gotest.tools/v3 v3.3.0
 )
 
 require (
@@ -34,6 +34,5 @@ require (
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )

@@ -3,7 +3,7 @@ package render
 import (
 	"github.com/specgen-io/rendr/blueprint"
 	"github.com/specgen-io/rendr/values"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 	"testing"
 )
 
