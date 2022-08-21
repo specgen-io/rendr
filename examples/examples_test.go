@@ -1,4 +1,4 @@
-package tests
+package examples
 
 import (
 	"fmt"
@@ -16,17 +16,17 @@ var exampleTestCases = []string{
 }
 
 func Test_Examples(t *testing.T) {
-	examplesPath, err := filepath.Abs("./examples")
+	examplesPath, err := filepath.Abs("./")
 	if err != nil {
 		t.Fatalf(`failed to get absolute path for "%s": %s`, "./examples", err.Error())
 	}
 
-	expectedPath, err := filepath.Abs("./expected")
+	expectedPath, err := filepath.Abs("./_expected")
 	if err != nil {
 		t.Fatalf(`failed to get absolute path for "%s": %s`, "./expected", err.Error())
 	}
 
-	actualPath, err := filepath.Abs("./actual")
+	actualPath, err := filepath.Abs("./_actual")
 	if err != nil {
 		t.Fatalf(`failed to get absolute path for "%s": %s`, "./actual", err.Error())
 	}

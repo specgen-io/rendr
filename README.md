@@ -426,8 +426,10 @@ args:
     args:
       foo:
         type: string
+        default: 1.0.0
       bar:
         type: string
+        default: 1.0.0
 ```
 
 File `values.json`:
@@ -473,8 +475,8 @@ Command:
 rendr render \
   -set foo="the foo" \  # set foo argument value
   -set bar="the bar" \  # set option can be used multiple times
-  -set versions.foo="1.0" \
-  -set versions.bar="2.0" \
+  -set versions.foo="3.0.0" \
+  -set versions.bar="4.0.0" \
   github.com/specgen-io/rendr examples/simple
 ```
 

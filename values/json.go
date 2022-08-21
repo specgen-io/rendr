@@ -2,7 +2,6 @@ package values
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/specgen-io/rendr/blueprint"
 	"strings"
@@ -21,21 +20,21 @@ func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (i
 	if arg.String != nil {
 		stringValue, isString := value.(string)
 		if !isString {
-			return nil, errors.New(fmt.Sprintf(`argument "%s" should be string`, strings.Join(path, ".")))
+			return nil, fmt.Errorf(`argument "%s" should be string`, strings.Join(path, "."))
 		}
 		return stringValue, nil
 	}
 	if arg.Boolean != nil {
 		boolValue, isBool := value.(bool)
 		if !isBool {
-			return nil, errors.New(fmt.Sprintf(`argument "%s" should be boolean`, strings.Join(path, ".")))
+			return nil, fmt.Errorf(`argument "%s" should be boolean`, strings.Join(path, "."))
 		}
 		return boolValue, nil
 	}
 	if arg.Array != nil {
 		arrayValues, isArray := value.([]interface{})
 		if !isArray {
-			return nil, errors.New(fmt.Sprintf(`argument "%s" should be array`, strings.Join(path, ".")))
+			return nil, fmt.Errorf(`argument "%s" should be array`, strings.Join(path, "."))
 		}
 		values := make([]string, len(arrayValues))
 		for index := range arrayValues {
@@ -46,12 +45,15 @@ func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (i
 	if arg.Map != nil {
 		mapValues, isMap := value.(map[string]interface{})
 		if !isMap {
-			return nil, errors.New(fmt.Sprintf(`argument "%s" should be map`, strings.Join(path, ".")))
+			return nil, fmt.Errorf(`argument "%s" should be map`, strings.Join(path, "."))
 		}
 		values := ArgsValues{}
 		for nestedArgName, nestedArgValue := range mapValues {
+			nestedPath := append(path, nestedArgName)
 			nestedArg := arg.Map.Args.FindByName(nestedArgName)
-			nestedPath := append(path, nestedArg.Name)
+			if nestedArg == nil {
+				return nil, fmt.Errorf(`argument "%s" is not defined in the blueprint but has value provided for it`, strings.Join(nestedPath, "."))
+			}
 			nestedValue, err := ValidateValue(nestedPath, nestedArg, nestedArgValue)
 			if err != nil {
 				return nil, err

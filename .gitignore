@@ -1,4 +1,4 @@
 /dist
 /.idea/*
 .DS_Store
-/tests/actual/*
+/examples/_actual/*
