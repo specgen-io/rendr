@@ -1,0 +1,11 @@
+rendr: 0
+name: folders
+title: Folders example template
+
+args:
+  foo:
+    type: string
+  bar:
+    type: boolean
+  baz:
+    type: boolean

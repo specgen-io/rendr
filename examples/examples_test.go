@@ -15,6 +15,7 @@ import (
 var exampleTestCases = []ExampleTestCase{
 	{"simple", "json_values"},
 	{"simple", "override_values"},
+	{"folders", "folders"},
 }
 
 type ExampleTestCase struct {
