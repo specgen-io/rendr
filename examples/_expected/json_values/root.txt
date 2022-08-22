@@ -4,5 +4,9 @@ Here are values of templates arguments.
 The foo value: the foo
 The bar value: true
 
+Here are arguments from versions group.
+The versions.foo value: 3.0.0
+The versions.bar value: 4.0.0
+
 Let's test conditions as well:
 This line will be here if bar is true.

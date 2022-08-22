@@ -4,6 +4,10 @@ Here are values of templates arguments.
 The foo value: {{foo.value}}
 The bar value: {{bar.value}}
 
+Here are arguments from versions group.
+The versions.foo value: {{versions.foo.value}}
+The versions.bar value: {{versions.bar.value}}
+
 Let's test conditions as well:
 {{#bar.value}}
 This line will be here if bar is true.

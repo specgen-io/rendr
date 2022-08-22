@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/specgen-io/rendr/render"
 	"gotest.tools/v3/assert"
@@ -11,8 +12,14 @@ import (
 	"testing"
 )
 
-var exampleTestCases = []string{
-	"simple",
+var exampleTestCases = []ExampleTestCase{
+	{"simple", "json_values"},
+	{"simple", "override_values"},
+}
+
+type ExampleTestCase struct {
+	Template string
+	Expected string
 }
 
 func Test_Examples(t *testing.T) {
@@ -38,12 +45,12 @@ func Test_Examples(t *testing.T) {
 	}
 
 	for _, testcase := range exampleTestCases {
-		t.Logf(`Running test case: %s`, testcase)
+		t.Logf(`Running test case: %s`, testcase.Expected)
 
-		templatePath := filepath.Join(examplesPath, testcase)
+		templatePath := filepath.Join(examplesPath, testcase.Template)
 
 		var valuesJsonData []byte = nil
-		valuesJsonPath := filepath.Join(expectedPath, fmt.Sprintf(`%s.json`, testcase))
+		valuesJsonPath := filepath.Join(expectedPath, fmt.Sprintf(`%s.json`, testcase.Expected))
 		if render.Exists(valuesJsonPath) {
 			data, err := ioutil.ReadFile(valuesJsonPath)
 			if err != nil {
@@ -53,12 +60,23 @@ func Test_Examples(t *testing.T) {
 		}
 
 		var overrides []string = nil
-		//overridesPath := filepath.Join(expectedPath, fmt.Sprintf(`%s.overrides`, testcase))
-		//if render.Exists(overridesPath) {
-		//
-		//}
+		overridesPath := filepath.Join(expectedPath, fmt.Sprintf(`%s.overrides`, testcase.Expected))
+		if render.Exists(overridesPath) {
+			overrides = []string{}
+			file, err := os.Open(overridesPath)
+			if err != nil {
+				t.Fatalf(`failed to read file "%s": %s`, overridesPath, err.Error())
+			}
 
-		outPath, err := os.MkdirTemp(actualPath, testcase)
+			scanner := bufio.NewScanner(file)
+			scanner.Split(bufio.ScanLines)
+			for scanner.Scan() {
+				overrides = append(overrides, scanner.Text())
+			}
+			file.Close()
+		}
+
+		outPath, err := os.MkdirTemp(actualPath, testcase.Expected)
 		if err != nil {
 			t.Fatalf(`failed to get temp folder path: %s`, err.Error())
 		}
@@ -71,7 +89,7 @@ func Test_Examples(t *testing.T) {
 			t.Fatalf(`failed to render template: %s`, err.Error())
 		}
 
-		expectedCasePath := filepath.Join(expectedPath, testcase)
+		expectedCasePath := filepath.Join(expectedPath, testcase.Expected)
 
 		assert.Assert(t, fs.Equal(outPath, fs.ManifestFromDir(t, expectedCasePath)))
 	}

@@ -14,6 +14,9 @@ func ParseValues(args blueprint.Args, values []string) (ArgsValues, error) {
 	for _, value := range values {
 		parts := strings.SplitN(value, "=", 2)
 		argValue := parts[1]
+		if strings.HasPrefix(argValue, `"`) && strings.HasSuffix(argValue, `"`) {
+			argValue = argValue[1 : len(argValue)-1]
+		}
 		path := strings.Split(parts[0], ".")
 
 		err := setValue(&rootArg, result, path, argValue)

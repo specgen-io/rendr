@@ -1,0 +1,4 @@
+foo="the foo"
+bar=true
+versions.foo=3.0.0
+versions.bar=4.0.0
