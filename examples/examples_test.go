@@ -49,8 +49,10 @@ func Test_Examples(t *testing.T) {
 
 		templatePath := filepath.Join(examplesPath, testcase.Template)
 
+		expectedCasePath := filepath.Join(expectedPath, testcase.Expected)
+
 		var valuesJsonData []byte = nil
-		valuesJsonPath := filepath.Join(expectedPath, fmt.Sprintf(`%s.json`, testcase.Expected))
+		valuesJsonPath := filepath.Join(expectedCasePath, `values.json`)
 		if render.Exists(valuesJsonPath) {
 			data, err := ioutil.ReadFile(valuesJsonPath)
 			if err != nil {
@@ -60,7 +62,7 @@ func Test_Examples(t *testing.T) {
 		}
 
 		var overrides []string = nil
-		overridesPath := filepath.Join(expectedPath, fmt.Sprintf(`%s.overrides`, testcase.Expected))
+		overridesPath := filepath.Join(expectedCasePath, `values.overrides`)
 		if render.Exists(overridesPath) {
 			overrides = []string{}
 			file, err := os.Open(overridesPath)
@@ -89,9 +91,9 @@ func Test_Examples(t *testing.T) {
 			t.Fatalf(`failed to render template: %s`, err.Error())
 		}
 
-		expectedCasePath := filepath.Join(expectedPath, testcase.Expected)
+		expectedFilesPath := filepath.Join(expectedCasePath, `files`)
 
-		assert.Assert(t, fs.Equal(outPath, fs.ManifestFromDir(t, expectedCasePath)))
+		assert.Assert(t, fs.Equal(outPath, fs.ManifestFromDir(t, expectedFilesPath)))
 	}
 }
 
