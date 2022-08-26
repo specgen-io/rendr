@@ -28,7 +28,6 @@ func main() {
 	}
 
 	cmdRender := CmdRender()
-	cmdBuild := CmdBuild()
 
 	if len(os.Args) < 2 {
 		flag.Usage()
@@ -41,8 +40,6 @@ func main() {
 	switch command {
 	case "render":
 		cmdRender.Execute(args)
-	case "build":
-		cmdBuild.Execute(args)
 	case "help":
 		flag.Usage()
 	default:
@@ -162,51 +159,4 @@ func (command *cmdRender) Execute(arguments []string) {
 
 	err = renderedFiles.WriteAll(*command.OutPath, true)
 	failIfError(err, `Failed to write rendered files`)
-}
-
-type cmdBuild struct {
-	Cmd  *flag.FlagSet
-	Help *bool
-}
-
-func CmdBuild() *cmdBuild {
-	command := flag.NewFlagSet("build", flag.ExitOnError)
-
-	cmd := cmdBuild{Cmd: command}
-
-	cmd.Help = command.Bool("help", false, `Prints command help.`)
-
-	command.Usage = func() {
-		w := flag.CommandLine.Output()
-		fmt.Fprintf(w, "Usage: build <path>\n")
-		fmt.Println()
-		fmt.Println("Parameters:")
-		fmt.Println(`  <path>`)
-		fmt.Println(`        Path to rendered project (default ".")`)
-		fmt.Println()
-		fmt.Println(`To print usage run: rendr help`)
-	}
-
-	return &cmd
-}
-
-func (command *cmdBuild) Execute(arguments []string) {
-	command.Cmd.Parse(arguments)
-
-	if *command.Help {
-		command.Cmd.Usage()
-		os.Exit(0)
-	}
-
-	if command.Cmd.NArg() < 1 {
-		stderr.Println(`Parameter <path> is not provided.`)
-		fmt.Println()
-		command.Cmd.Usage()
-		os.Exit(1)
-	}
-	path := command.Cmd.Arg(0)
-
-	artifact, err := render.GetArtifact(path)
-	failIfError(err, `Failed to read rendr artifact in: %s`, path)
-	stdout.Println(artifact.BuildCommand)
 }
