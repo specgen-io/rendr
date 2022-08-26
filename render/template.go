@@ -16,7 +16,7 @@ import (
 )
 
 type Template struct {
-	RepoUrl       string
+	Source        string
 	Path          string
 	BlueprintPath string
 }
@@ -30,7 +30,7 @@ const (
 )
 
 func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (Files, error) {
-	filesystem, err := getFilesystem(t.RepoUrl)
+	filesystem, err := getFilesystem(t.Source)
 	if err != nil {
 		return nil, err
 	}
