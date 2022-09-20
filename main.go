@@ -165,10 +165,10 @@ func (command *cmdRender) Execute(arguments []string) {
 func normalizeTemplateUrl(templateUrl string) string {
 	if strings.HasPrefix(templateUrl, "github.com") {
 		parts := strings.Split(templateUrl, "/")
-		githubSlug := parts[0:2]
+		githubSlug := parts[0:3]
 		templateUrl = fmt.Sprintf(`https://%s.git`, strings.Join(githubSlug, "/"))
 		if len(parts) > 3 {
-			pathParts := parts[3 : len(parts)-1]
+			pathParts := parts[3:]
 			templateUrl = fmt.Sprintf(`%s/%s`, templateUrl, strings.Join(pathParts, "/"))
 		}
 	}

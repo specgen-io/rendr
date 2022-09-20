@@ -113,7 +113,7 @@ func splitSource(sourceUrl string) (string, string) {
 	}
 	parts := strings.Split(sourceUrl, ".git/")
 	path := parts[1]
-	source := sourceUrl[:len(sourceUrl)-1-len(path)-1]
+	source := sourceUrl[:len(sourceUrl)-1-len(path)]
 	return source, path
 }
 

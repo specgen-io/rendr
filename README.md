@@ -50,13 +50,13 @@ The rendr tool provides convenince for both automation and developers via utiliz
 
 This command will render the template located in [examples/simple](https://github.com/specgen-io/rendr/tree/main/examples/simple) folder of the [github.com/specgen-io/rendr](http://github.com/specgen-io/rendr]) repository.
 ```bash
-rendr render github.com/specgen-io/rendr examples/simple
+rendr render github.com/specgen-io/rendr/examples/simple
 ```
 
 Template could be sourced from the local file system:
 
 ```bash
-rendr render file:///some_path/rendr-example 
+rendr render file:///some_path/rendr-example
 #                    ^ this path should exist 
 ```
 
@@ -395,7 +395,7 @@ Alternatively rendr binary could be downloaded from [repository releases](https:
 
 Here's a simple usage example:
 ```bash
-rendr render github.com/specgen-io/rendr examples/simple
+rendr render github.com/specgen-io/rendr/examples/simple
 #            ^ repo with template        ^ path to the template inside of the repo
 ```
 
@@ -446,7 +446,7 @@ File `values.json`:
 
 Command:
 ```bash
-rendr render -values values.json github.com/specgen-io/rendr examples/simple
+rendr render -values values.json github.com/specgen-io/rendr/examples/simple
 #            ^ pass JSON file with arguments values
 ```
 
@@ -477,7 +477,7 @@ rendr render \
   -set bar="the bar" \  # set option can be used multiple times
   -set versions.foo="3.0.0" \
   -set versions.bar="4.0.0" \
-  github.com/specgen-io/rendr examples/simple
+  github.com/specgen-io/rendr/examples/simple
 ```
 
 Note how grouped arguments are set by their full names: `versions.foo` and `versions.bar`.
@@ -488,7 +488,7 @@ The default location of the blueprint file is `./rendr.yaml`.
 This could be customized via `-blueprint` option:
 
 ```bash
-rendr render -blueprint blueprint.yaml github.com/specgen-io/rendr examples/simple
+rendr render -blueprint blueprint.yaml github.com/specgen-io/rendr/examples/simple
 ```
 
 ### Output Location
@@ -498,7 +498,7 @@ By default rendr tries to write rendered template into the current folder.
 This could be customized with `-out` option:
 
 ```bash
-rendr render -out ./output/path github.com/specgen-io/rendr examples/simple
+rendr render -out ./output/path github.com/specgen-io/rendr/examples/simple
 ```
 
 ## Rendr as a Library
