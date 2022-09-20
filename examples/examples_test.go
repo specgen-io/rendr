@@ -100,7 +100,7 @@ func Test_Examples(t *testing.T) {
 
 func RenderExampleTemplate(templatePath string, valuesJson []byte, overrides []string, outPath string) error {
 	templateUrl := fmt.Sprintf(`file:///%s`, templatePath)
-	template := render.Template{templateUrl, "", "rendr.yaml"}
+	template := render.Template{templateUrl, "rendr.yaml", nil}
 	renderedFiles, err := template.Render(render.NoInputMode, valuesJson, overrides)
 	if err != nil {
 		return err

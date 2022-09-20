@@ -94,16 +94,18 @@ func CmdRender() *cmdRender {
 
 	command.Usage = func() {
 		w := flag.CommandLine.Output()
-		fmt.Fprintf(w, "Usage: rendr [options] <template-url> [<path>]\n")
+		fmt.Fprintf(w, "Usage: rendr [options] <template-url> [<extra-root> ...]\n")
 		fmt.Println()
 		fmt.Println("Parameters:")
 		fmt.Println(`  <template-url>`)
 		fmt.Println(`        Location of the template to be rendered.`)
 		fmt.Println(`          For git repositories use the full url, for example: "https://github.com/thecompany/therepo.git".`)
-		fmt.Println(`          Local filesystem template could be used via file URI scheme: "file:///./some/path/template"`)
-		fmt.Println(`          Github repositories could be used by their slug: "github.com/thecompany/therepo"`)
-		fmt.Println(`  <path>`)
-		fmt.Println(`        Path to the root of the template inside of <template-url>. Used only when the repository/folder contains multiple templates. (default "")`)
+		fmt.Println(`          Optionally if a subfloder of the repository is needed it could be specified after the repo url: "https://github.com/thecompany/therepo.git/subfolder".`)
+		fmt.Println(`          Local filesystem template could be used via file URI scheme: "file:///./some/path/template".`)
+		fmt.Println(`          Github repositories could be used by their slug which will be examded automatically: "github.com/thecompany/therepo".`)
+		fmt.Println(`  <extra-root>`)
+		fmt.Println(`        Extra root to add to template files.`)
+		fmt.Println(`          Similar to <template-url> might be pointing to the file system or git repo.`)
 		fmt.Println()
 		fmt.Println("Options:")
 		command.PrintDefaults()
@@ -129,14 +131,13 @@ func (command *cmdRender) Execute(arguments []string) {
 	}
 	templateUrl := command.Cmd.Arg(0)
 
-	path := ""
-	if command.Cmd.NArg() > 1 {
-		path = command.Cmd.Arg(1)
+	extraRoots := []string{}
+	for iarg := 1; iarg < command.Cmd.NArg(); iarg++ {
+		extraRoot := command.Cmd.Arg(iarg)
+		extraRoots = append(extraRoots, normalizeTemplateUrl(extraRoot))
 	}
 
-	if strings.HasPrefix(templateUrl, "github.com") {
-		templateUrl = fmt.Sprintf(`https://%s.git`, templateUrl)
-	}
+	templateUrl = normalizeTemplateUrl(templateUrl)
 
 	var valuesJsonData []byte = nil
 	if *command.ValuesJsonPath != "" {
@@ -153,10 +154,23 @@ func (command *cmdRender) Execute(arguments []string) {
 		inputMode = render.NoInputMode
 	}
 
-	template := render.Template{templateUrl, path, *command.BlueprintPath}
+	template := render.Template{templateUrl, *command.BlueprintPath, extraRoots}
 	renderedFiles, err := template.Render(inputMode, valuesJsonData, command.Overrides)
 	failIfError(err, `Failed to render`)
 
 	err = renderedFiles.WriteAll(*command.OutPath, true)
 	failIfError(err, `Failed to write rendered files`)
+}
+
+func normalizeTemplateUrl(templateUrl string) string {
+	if strings.HasPrefix(templateUrl, "github.com") {
+		parts := strings.Split(templateUrl, "/")
+		githubSlug := parts[0:2]
+		templateUrl = fmt.Sprintf(`https://%s.git`, strings.Join(githubSlug, "/"))
+		if len(parts) > 3 {
+			pathParts := parts[3 : len(parts)-1]
+			templateUrl = fmt.Sprintf(`%s/%s`, templateUrl, strings.Join(pathParts, "/"))
+		}
+	}
+	return templateUrl
 }

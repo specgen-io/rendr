@@ -17,8 +17,8 @@ import (
 
 type Template struct {
 	Source        string
-	Path          string
 	BlueprintPath string
+	ExtraRoots    []string
 }
 
 type InputMode string
@@ -29,13 +29,8 @@ const (
 	ForceInputMode   InputMode = "force"
 )
 
-func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (Files, error) {
-	filesystem, err := getFilesystem(t.Source)
-	if err != nil {
-		return nil, err
-	}
-
-	blueprint, err := t.LoadBlueprint(filesystem)
+func (t *Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (Files, error) {
+	blueprint, err := t.LoadBlueprint()
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +42,9 @@ func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKe
 
 	files := []File{}
 
-	for _, root := range blueprint.Roots {
-		rootFiles, err := t.RenderRoot(filesystem, root, blueprint, argsValues)
+	roots := t.GetRoots(blueprint)
+	for _, root := range roots {
+		rootFiles, err := renderRoot(root, blueprint, argsValues)
 		if err != nil {
 			return nil, err
 		}
@@ -67,14 +63,38 @@ func (t Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKe
 	return files, err
 }
 
-func (t Template) RenderRoot(
-	filesystem billy.Filesystem,
-	root string,
+type Root struct {
+	Source string
+	Path   string
+}
+
+func (t *Template) GetRoots(blueprint *blueprint.Blueprint) []string {
+	result := []string{}
+	for _, rootPath := range blueprint.Roots {
+		rootFullPath := t.Source
+		if rootPath != "." {
+			rootFullPath = fmt.Sprintf("%s/%s", rootFullPath, rootPath)
+		}
+		result = append(result, rootFullPath)
+	}
+	if t.ExtraRoots != nil {
+		result = append(result, t.ExtraRoots...)
+	}
+	return result
+}
+
+func renderRoot(
+	rootUrl string,
 	blueprint *blueprint.Blueprint,
 	argsValues values.ArgsValues) ([]File, error) {
 
-	renderFullPath := path.Join(t.Path, root)
-	templateFiles, err := getFiles(filesystem, renderFullPath, blueprint.IgnorePaths, blueprint.ExecutablePaths, blueprint.StaticPaths)
+	source, rootPath := splitSource(rootUrl)
+	filesystem, err := getFilesystem(source)
+	if err != nil {
+		return nil, err
+	}
+
+	templateFiles, err := getFiles(filesystem, rootPath, blueprint.IgnorePaths, blueprint.ExecutablePaths, blueprint.StaticPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +107,23 @@ func (t Template) RenderRoot(
 	return renderedFiles, nil
 }
 
-func (t Template) LoadBlueprint(filesystem billy.Filesystem) (*blueprint.Blueprint, error) {
-	blueprintFullpath := path.Join(t.Path, t.BlueprintPath)
+func splitSource(sourceUrl string) (string, string) {
+	if strings.HasPrefix(sourceUrl, "file:///") || strings.HasSuffix(sourceUrl, ".git") {
+		return sourceUrl, ""
+	}
+	parts := strings.Split(sourceUrl, ".git/")
+	path := parts[1]
+	source := sourceUrl[:len(sourceUrl)-1-len(path)-1]
+	return source, path
+}
+
+func (t *Template) LoadBlueprint() (*blueprint.Blueprint, error) {
+	source, sourcePath := splitSource(t.Source)
+	filesystem, err := getFilesystem(source)
+	if err != nil {
+		return nil, err
+	}
+	blueprintFullpath := path.Join(sourcePath, t.BlueprintPath)
 	data, err := util.ReadFile(filesystem, blueprintFullpath)
 	if err != nil {
 		return nil, err
@@ -107,16 +142,24 @@ func (t Template) LoadBlueprint(filesystem billy.Filesystem) (*blueprint.Bluepri
 	return result, nil
 }
 
-func getFilesystem(repoUrl string) (billy.Filesystem, error) {
-	if strings.HasPrefix(repoUrl, "file:///") {
-		repoPath := strings.TrimPrefix(repoUrl, "file:///")
-		return osfs.New(repoPath), nil
+var filesystems = make(map[string]billy.Filesystem)
+
+func getFilesystem(url string) (billy.Filesystem, error) {
+	if filesystem, found := filesystems[url]; found {
+		return filesystem, nil
+	}
+	if strings.HasPrefix(url, "file:///") {
+		repoPath := strings.TrimPrefix(url, "file:///")
+		filesystem := osfs.New(repoPath)
+		filesystems[url] = filesystem
+		return filesystem, nil
 	} else {
 		filesystem := memfs.New()
-		_, err := git.Clone(memory.NewStorage(), filesystem, &git.CloneOptions{URL: repoUrl})
+		_, err := git.Clone(memory.NewStorage(), filesystem, &git.CloneOptions{URL: url})
 		if err != nil {
 			return nil, err
 		}
+		filesystems[url] = filesystem
 		return filesystem, nil
 	}
 }
