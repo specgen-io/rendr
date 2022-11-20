@@ -50,14 +50,14 @@ The rendr tool provides convenince for both automation and developers via utiliz
 
 This command will render the template located in [examples/simple](https://github.com/specgen-io/rendr/tree/main/examples/simple) folder of the [github.com/specgen-io/rendr](http://github.com/specgen-io/rendr]) repository.
 ```bash
-rendr render github.com/specgen-io/rendr/examples/simple
+rendr github.com/specgen-io/rendr/examples/simple
 ```
 
 Template could be sourced from the local file system:
 
 ```bash
-rendr render file:///some_path/rendr-example
-#                    ^ this path should exist 
+rendr file:///some_path/rendr-example
+#             ^ this path should exist 
 ```
 
 You can find more about command line interface in [Rendr Command Line](#rendr-command-line) section.
@@ -395,19 +395,19 @@ Alternatively rendr binary could be downloaded from [repository releases](https:
 
 Here's a simple usage example:
 ```bash
-rendr render github.com/specgen-io/rendr/examples/simple
-#            ^ repo with template        ^ path to the template inside of the repo
+rendr github.com/specgen-io/rendr/examples/simple
+#     ^ repo with template        ^ path to the template inside of the repo
 ```
 
 ### Arguments via Input
 
 Whenever rendr doesn't have a value for the argument it will request for the user input.
-This behaviour could be adjusted with flags `-noinput` and `-forceinput`.
+This behaviour could be adjusted with flags `--noinput` and `--forceinput`.
 
-The `-noinput` flag disables user input completely. If the flag is set and there's no value for the specific argument the rendering will fail.
+The `--noinput` flag disables user input completely. If the flag is set and there's no value for the specific argument the rendering will fail.
 This mode is very useful for automation where user input is not possible.
 
-The `-forceinput` flag forces user input even for those arguments that are marked as `noinput` (check [No Input Arguments](#no-input-arguments) section).
+The `--forceinput` flag forces user input even for those arguments that are marked as `noinput` (check [No Input Arguments](#no-input-arguments) section).
 
 ### Arguments via JSON
 
@@ -446,7 +446,7 @@ File `values.json`:
 
 Command:
 ```bash
-rendr render -values values.json github.com/specgen-io/rendr/examples/simple
+rendr render --values values.json github.com/specgen-io/rendr/examples/simple
 #            ^ pass JSON file with arguments values
 ```
 
@@ -472,11 +472,11 @@ args:
 
 Command:
 ```bash
-rendr render \
-  -set foo="the foo" \  # set foo argument value
-  -set bar="the bar" \  # set option can be used multiple times
-  -set versions.foo="3.0.0" \
-  -set versions.bar="4.0.0" \
+rendr \
+  --set foo="the foo" \  # set foo argument value
+  --set bar="the bar" \  # set option can be used multiple times
+  --set versions.foo="3.0.0" \
+  --set versions.bar="4.0.0" \
   github.com/specgen-io/rendr/examples/simple
 ```
 
@@ -485,10 +485,10 @@ Note how grouped arguments are set by their full names: `versions.foo` and `vers
 ### Blueprint Location
 
 The default location of the blueprint file is `./rendr.yaml`.
-This could be customized via `-blueprint` option:
+This could be customized via `--blueprint` option:
 
 ```bash
-rendr render -blueprint blueprint.yaml github.com/specgen-io/rendr/examples/simple
+rendr render --blueprint blueprint.yaml github.com/specgen-io/rendr/examples/simple
 ```
 
 ### Output Location
@@ -498,7 +498,7 @@ By default rendr tries to write rendered template into the current folder.
 This could be customized with `-out` option:
 
 ```bash
-rendr render -out ./output/path github.com/specgen-io/rendr/examples/simple
+rendr render --out ./output/path github.com/specgen-io/rendr/examples/simple
 ```
 
 ## Rendr as a Library
