@@ -111,7 +111,7 @@ func renderTemplate(sourceUrl string, extraRoots []string, blueprintPath string,
 
 func failIfError(err error, format string, args ...interface{}) {
 	if err != nil {
-		fmt.Fprintf(os.Stderr, format, args)
+		fmt.Fprintf(os.Stderr, format, args...)
 		fmt.Fprintf(os.Stderr, err.Error())
 		os.Exit(1)
 	}
