@@ -4,19 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/specgen-io/rendr/blueprint"
+	"gopkg.in/specgen-io/yaml.v3"
 	"strings"
 )
 
-func ValidateValues(args blueprint.Args, values map[string]interface{}) (ArgsValues, error) {
+func validateValuesData(args blueprint.Args, values map[string]interface{}) (ArgsValues, error) {
 	rootArg := blueprint.NamedGroupArg("", "", false, "", args)
-	value, err := ValidateValue([]string{}, &rootArg, values)
+	value, err := validateValueData([]string{}, &rootArg, values)
 	if err != nil {
 		return nil, err
 	}
 	return value.(ArgsValues), nil
 }
 
-func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (interface{}, error) {
+func validateValueData(path []string, arg *blueprint.NamedArg, value interface{}) (interface{}, error) {
 	if arg.String != nil {
 		stringValue, isString := value.(string)
 		if !isString {
@@ -54,7 +55,7 @@ func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (i
 			if nestedArg == nil {
 				return nil, fmt.Errorf(`argument "%s" is not defined in the blueprint but has value provided for it`, strings.Join(nestedPath, "."))
 			}
-			nestedValue, err := ValidateValue(nestedPath, nestedArg, nestedArgValue)
+			nestedValue, err := validateValueData(nestedPath, nestedArg, nestedArgValue)
 			if err != nil {
 				return nil, err
 			}
@@ -65,13 +66,38 @@ func ValidateValue(path []string, arg *blueprint.NamedArg, value interface{}) (i
 	panic(fmt.Sprintf(fmt.Sprintf(`unknown argument kind: "%s"`, arg.Name)))
 }
 
-func ReadValuesJson(args blueprint.Args, data []byte) (ArgsValues, error) {
-	values := map[string]interface{}{}
-	err := json.Unmarshal(data, &values)
-	if err != nil {
-		return nil, err
+type ValuesDataKind string
+
+const (
+	JSON ValuesDataKind = "json"
+	YAML ValuesDataKind = "yaml"
+)
+
+type ValuesData struct {
+	Kind ValuesDataKind
+	Data []byte
+}
+
+func ReadValuesData(args blueprint.Args, valuesData *ValuesData) (ArgsValues, error) {
+	if valuesData == nil {
+		return nil, nil
 	}
-	argsValues, err := ValidateValues(args, values)
+	values := map[string]interface{}{}
+	switch valuesData.Kind {
+	case JSON:
+		err := json.Unmarshal(valuesData.Data, &values)
+		if err != nil {
+			return nil, err
+		}
+		break
+	case YAML:
+		err := yaml.Unmarshal(valuesData.Data, &values)
+		if err != nil {
+			return nil, err
+		}
+		break
+	}
+	argsValues, err := validateValuesData(args, values)
 	if err != nil {
 		return nil, err
 	}

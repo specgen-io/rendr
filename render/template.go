@@ -29,13 +29,13 @@ const (
 	ForceInputMode   InputMode = "force"
 )
 
-func (t *Template) Render(inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (Files, error) {
+func (t *Template) Render(inputMode InputMode, valuesData *values.ValuesData, overridesKeysValues []string) (Files, error) {
 	blueprint, err := t.LoadBlueprint()
 	if err != nil {
 		return nil, err
 	}
 
-	argsValues, err := t.GetArgsValues(blueprint.Args, inputMode, valuesJsonData, overridesKeysValues)
+	argsValues, err := t.GetArgsValues(blueprint.Args, inputMode, valuesData, overridesKeysValues)
 	if err != nil {
 		return nil, err
 	}

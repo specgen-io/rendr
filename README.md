@@ -39,7 +39,7 @@ The rendr tool provides convenince for both automation and developers via utiliz
 * [Rendr Command Line](#rendr-command-line)
   * [Installation](#installation)
   * [Arguments via Input](#arguments-via-input)
-  * [Arguments via JSON](#arguments-via-json)
+  * [Arguments via Values File](#arguments-via-values-file)
   * [Arguments via Command Line](#arguments-via-command-line)
   * [Blueprint Location](#blueprint-location)
   * [Output Location](#output-location)
@@ -409,9 +409,9 @@ This mode is very useful for automation where user input is not possible.
 
 The `--forceinput` flag forces user input even for those arguments that are marked as `noinput` (check [No Input Arguments](#no-input-arguments) section).
 
-### Arguments via JSON
+### Arguments via Values File
 
-Arguments values might be provided via JSON file.
+Arguments values might be provided via JSON or YAML file.
 This might be useful in automation use cases when dealing with many arguments.
 
 Blueprint:
@@ -432,6 +432,15 @@ args:
         default: 1.0.0
 ```
 
+File `values.yaml`:
+```yaml
+foo: "the foo value"
+bar: true
+versions:
+  foo: "3.0.0",
+  bar: "4.0.0"
+```
+
 File `values.json`:
 ```json
 {
@@ -444,8 +453,11 @@ File `values.json`:
 }
 ```
 
-Command:
+Commands:
 ```bash
+rendr render --values values.yaml github.com/specgen-io/rendr/examples/simple
+#            ^ pass YAML file with arguments values
+
 rendr render --values values.json github.com/specgen-io/rendr/examples/simple
 #            ^ pass JSON file with arguments values
 ```
@@ -517,7 +529,7 @@ Here's how template could be rendered:
 template := render.Template{templateUrl, path, blueprintPath}
 
 // render the template
-renderedFiles, err := template.Render(inputMode, valuesJsonData, overrides)
+renderedFiles, err := template.Render(inputMode, valuesData, overrides)
 
 // write files
 err = renderedFiles.WriteAll(outPath, true)

@@ -6,16 +6,16 @@ import (
 	"github.com/specgen-io/rendr/values"
 )
 
-func (t Template) GetArgsValues(args blueprint.Args, inputMode InputMode, valuesJsonData []byte, overridesKeysValues []string) (values.ArgsValues, error) {
+func (t Template) GetArgsValues(args blueprint.Args, inputMode InputMode, valuesData *values.ValuesData, overridesKeysValues []string) (values.ArgsValues, error) {
 	var err error = nil
 
-	argsValues := values.ArgsValues{}
+	argsValues, err := values.ReadValuesData(args, valuesData)
+	if err != nil {
+		return nil, err
+	}
 
-	if valuesJsonData != nil {
-		argsValues, err = values.ReadValuesJson(args, valuesJsonData)
-		if err != nil {
-			return nil, err
-		}
+	if argsValues == nil {
+		argsValues = values.ArgsValues{}
 	}
 
 	if overridesKeysValues != nil {

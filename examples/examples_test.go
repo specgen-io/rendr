@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/specgen-io/rendr/render"
+	"github.com/specgen-io/rendr/values"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/fs"
 	"io/ioutil"
@@ -61,6 +62,10 @@ func Test_Examples(t *testing.T) {
 			}
 			valuesJsonData = data
 		}
+		var valuesData *values.ValuesData = nil
+		if valuesJsonData != nil {
+			valuesData = &values.ValuesData{values.JSON, valuesJsonData}
+		}
 
 		var overrides []string = nil
 		overridesPath := filepath.Join(expectedCasePath, `values.overrides`)
@@ -87,7 +92,7 @@ func Test_Examples(t *testing.T) {
 		if err != nil {
 			t.Fatalf(`failed to change mode for folder "%s": %s`, outPath, err.Error())
 		}
-		err = RenderExampleTemplate(templatePath, valuesJsonData, overrides, outPath)
+		err = RenderExampleTemplate(templatePath, valuesData, overrides, outPath)
 		if err != nil {
 			t.Fatalf(`failed to render template: %s`, err.Error())
 		}
@@ -98,10 +103,10 @@ func Test_Examples(t *testing.T) {
 	}
 }
 
-func RenderExampleTemplate(templatePath string, valuesJson []byte, overrides []string, outPath string) error {
+func RenderExampleTemplate(templatePath string, valuesData *values.ValuesData, overrides []string, outPath string) error {
 	templateUrl := fmt.Sprintf(`file:///%s`, templatePath)
 	template := render.Template{templateUrl, "rendr.yaml", nil}
-	renderedFiles, err := template.Render(render.NoInputMode, valuesJson, overrides)
+	renderedFiles, err := template.Render(render.NoInputMode, valuesData, overrides)
 	if err != nil {
 		return err
 	}
