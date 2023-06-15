@@ -38,7 +38,7 @@ func EnrichValue(arg *blueprint.NamedArg, value interface{}) interface{} {
 }
 
 func packBoolValue(boolValue bool) map[string]interface{} {
-	valueObj := map[string]interface{}{"value": boolValue}
+	valueObj := map[string]interface{}{"value": boolValue, "is_true": boolValue, "is_false": !boolValue}
 	return valueObj
 }
 
@@ -53,7 +53,7 @@ func packStringValue(possibleValues []string, stringValue string) map[string]int
 }
 
 func packStringArrayValue(possibleValues []string, strArrayValue []string) map[string]interface{} {
-	valueObj := map[string]interface{}{"value": strArrayValue}
+	valueObj := map[string]interface{}{"value": strArrayValue, "values": strArrayValue}
 	if possibleValues != nil {
 		for _, possibleValue := range possibleValues {
 			valueObj[possibleValue] = contains(strArrayValue, possibleValue)

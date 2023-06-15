@@ -264,6 +264,28 @@ public class Main {
 }
 ```
 
+For convenience `boolean` arguments values could be referenced via `is_true` and `is_false` boolean flags of the argument:
+
+Blueprint:
+```yaml
+args:
+  helloworld:
+    type: boolean
+```
+Usage:
+```java
+package com.example;
+
+public class Main {
+    public static void main(String[] args) {
+        {{#helloworld.is_true}}
+        System.out.println("Hello world!!!");
+        // ^ this line will be rendered only if helloworld argument is true
+        {{/helloworld.is_true}}
+    }
+}
+```
+
 Arguments that have possible values set also populated with boolean flags to enable checks for specific values:
 
 Blueprint:
@@ -290,6 +312,30 @@ public class Main {
     }
 }
 ```
+
+The `array` arguments values could be used via `values` member of the argument for better readability:
+
+Blueprint:
+```yaml
+args:
+  features:
+    type: array
+    values: [helloworld, exit]
+```
+Usage:
+```java
+package com.example;
+
+public class Main {
+    public static void main(String[] args) {
+        {{#features.values}}
+        System.out.println("Feature {{.}} was requested");
+        // ^ this will be rendered for each value of the features argument
+        {{/features.values}}
+    }
+}
+```
+
 
 #### Arguments in Paths
 

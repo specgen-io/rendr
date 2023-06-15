@@ -24,7 +24,7 @@ var enrichValues = []EnrichTestCase{
 		},
 		ArgsValues{"param": true},
 		ArgsValues{
-			"param": map[string]interface{}{"value": true},
+			"param": map[string]interface{}{"value": true, "is_true": true, "is_false": false},
 		},
 	},
 	{
@@ -44,7 +44,7 @@ var enrichValues = []EnrichTestCase{
 		},
 		ArgsValues{"param": []string{"value1", "value3"}},
 		ArgsValues{
-			"param": map[string]interface{}{"value": []string{"value1", "value3"}, "value1": true, "value2": false, "value3": true},
+			"param": map[string]interface{}{"value": []string{"value1", "value3"}, "values": []string{"value1", "value3"}, "value1": true, "value2": false, "value3": true},
 		},
 	},
 }

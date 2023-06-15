@@ -9,9 +9,9 @@ The versions.foo value: {{versions.foo.value}}
 The versions.bar value: {{versions.bar.value}}
 
 Let's test conditions as well:
-{{#bar.value}}
+{{#bar.is_true}}
 This line will be here if bar is true.
-{{/bar.value}}
-{{^bar.value}}
+{{/bar.is_true}}
+{{^bar.is_true}}
 This line will be here if bar is false.
-{{/bar.value}}
+{{/bar.is_true}}
