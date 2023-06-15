@@ -70,19 +70,19 @@ var cmdNew = &cobra.Command{
 			inputMode = render.NoInputMode
 		}
 
-		var valuesData []byte = nil
+		var valuesData *values.ValuesData = nil
 		if valuesFilePath != "" {
 			data, err := ioutil.ReadFile(valuesFilePath)
 			failIfError(err, `Failed to read arguments file "%s"`, valuesFilePath)
-			valuesData = data
-		}
-		valuesDataKind := values.JSON
-		if strings.HasSuffix(valuesFilePath, ".yaml") || strings.HasSuffix(valuesFilePath, ".yml") {
-			valuesDataKind = values.YAML
+			valuesDataKind := values.JSON
+			if strings.HasSuffix(valuesFilePath, ".yaml") || strings.HasSuffix(valuesFilePath, ".yml") {
+				valuesDataKind = values.YAML
+			}
+			valuesData = &values.ValuesData{valuesDataKind, data}
 		}
 
 		templateUrl = normalizeTemplateUrl(templateUrl)
-		err = renderTemplate(templateUrl, extraRoots, blueprintPath, outPath, inputMode, &values.ValuesData{valuesDataKind, valuesData}, overrides, !noOverwrites)
+		err = renderTemplate(templateUrl, extraRoots, blueprintPath, outPath, inputMode, valuesData, overrides, !noOverwrites)
 		failIfError(err, "Failed to render template")
 	},
 }
