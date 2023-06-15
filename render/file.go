@@ -1,6 +1,7 @@
 package render
 
 import (
+	"github.com/specgen-io/rendr/console"
 	"io/ioutil"
 	"os"
 	"path"
@@ -29,6 +30,7 @@ func Exists(path string) bool {
 func (file *File) Write(outPath string, overwrite bool) error {
 	fullPath := path.Join(outPath, file.Path)
 	if overwrite || !Exists(fullPath) {
+		console.Verbose("Writing: %s", fullPath)
 		data := []byte(file.Content)
 
 		dir := filepath.Dir(fullPath)
@@ -46,6 +48,8 @@ func (file *File) Write(outPath string, overwrite bool) error {
 			}
 		}
 		return ioutil.WriteFile(fullPath, data, 0644)
+	} else {
+		console.Verbose("Skipping: %s", fullPath)
 	}
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/specgen-io/rendr/blueprint"
 	"gopkg.in/specgen-io/yaml.v3"
+	"io/ioutil"
 	"strings"
 )
 
@@ -102,4 +103,20 @@ func ReadValuesData(args blueprint.Args, valuesData *ValuesData) (ArgsValues, er
 		return nil, err
 	}
 	return argsValues, nil
+}
+
+func LoadValuesFile(valuesFilePath string) (*ValuesData, error) {
+	var valuesData *ValuesData = nil
+	if valuesFilePath != "" {
+		data, err := ioutil.ReadFile(valuesFilePath)
+		if err != nil {
+			return nil, fmt.Errorf(`can't open file "%s": %s`, valuesFilePath, err.Error())
+		}
+		valuesDataKind := JSON
+		if strings.HasSuffix(valuesFilePath, ".yaml") || strings.HasSuffix(valuesFilePath, ".yml") {
+			valuesDataKind = YAML
+		}
+		valuesData = &ValuesData{valuesDataKind, data}
+	}
+	return valuesData, nil
 }

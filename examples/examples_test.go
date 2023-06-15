@@ -7,7 +7,6 @@ import (
 	"github.com/specgen-io/rendr/values"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -15,6 +14,7 @@ import (
 
 var exampleTestCases = []ExampleTestCase{
 	{"simple", "json_values"},
+	{"simple", "yaml_values"},
 	{"simple", "override_values"},
 	{"folders", "folders"},
 }
@@ -53,18 +53,16 @@ func Test_Examples(t *testing.T) {
 
 		expectedCasePath := filepath.Join(expectedPath, testcase.Expected)
 
-		var valuesJsonData []byte = nil
-		valuesJsonPath := filepath.Join(expectedCasePath, `values.json`)
-		if render.Exists(valuesJsonPath) {
-			data, err := ioutil.ReadFile(valuesJsonPath)
-			if err != nil {
-				t.Fatalf(`failed to read file "%s": %s`, valuesJsonPath, err.Error())
-			}
-			valuesJsonData = data
+		valuesPath := filepath.Join(expectedCasePath, `values.yaml`)
+		if !render.Exists(valuesPath) {
+			valuesPath = filepath.Join(expectedCasePath, `values.json`)
 		}
 		var valuesData *values.ValuesData = nil
-		if valuesJsonData != nil {
-			valuesData = &values.ValuesData{values.JSON, valuesJsonData}
+		if render.Exists(valuesPath) {
+			valuesData, err = values.LoadValuesFile(valuesPath)
+			if err != nil {
+				t.Fatalf(`failed to load values data "%s": %s`, valuesPath, err.Error())
+			}
 		}
 
 		var overrides []string = nil

@@ -32,12 +32,12 @@ const (
 func (t *Template) Render(inputMode InputMode, valuesData *values.ValuesData, overridesKeysValues []string) (Files, error) {
 	blueprint, err := t.LoadBlueprint()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to load template blueprint: %s", err.Error())
 	}
 
 	argsValues, err := t.GetArgsValues(blueprint.Args, inputMode, valuesData, overridesKeysValues)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get args values: %s", err.Error())
 	}
 
 	files := []File{}
@@ -46,7 +46,7 @@ func (t *Template) Render(inputMode InputMode, valuesData *values.ValuesData, ov
 	for _, root := range roots {
 		rootFiles, err := renderRoot(root, blueprint, argsValues)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf(`failed to render template root "%s": %s`, root, err.Error())
 		}
 		files = append(files, rootFiles...)
 	}
@@ -60,7 +60,7 @@ func (t *Template) Render(inputMode InputMode, valuesData *values.ValuesData, ov
 		}
 	}
 
-	return files, err
+	return files, nil
 }
 
 type Root struct {

@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/specgen-io/rendr/console"
 	"github.com/specgen-io/rendr/render"
 	"github.com/specgen-io/rendr/values"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -18,24 +18,34 @@ const Values = "values"
 const NoInput = "noinput"
 const ForceInput = "forceinput"
 const NoOverwrites = "nooverwrites"
+const Verbose = "verbose"
 
 func init() {
 	cobra.OnInitialize()
-	cmdNew.Flags().String(Blueprint, "rendr.yaml", `blueprint file inside of the template`)
-	cmdNew.Flags().String(OutPath, ".", `path to output rendered template`)
-	cmdNew.Flags().StringArray(Set, []string{}, `set arguments overrides in format "arg=value", repeat for setting multiple arguments values`)
-	cmdNew.Flags().String(Values, "", `path to arguments values file, could json or yaml`)
-	cmdNew.Flags().Bool(NoInput, false, `do not request user input for missing arguments values`)
-	cmdNew.Flags().Bool(ForceInput, false, `force user input requests even for noinput arguments`)
-	cmdNew.Flags().Bool(NoOverwrites, false, `do not overwrite files with rendered from template`)
-	cmdNew.Flags().StringArray(ExtraRoots, []string{}, `extra template root, repeat for setting multiple extra roots`)
+	cmdRoot.Flags().String(Blueprint, "rendr.yaml", `blueprint file inside of the template`)
+	cmdRoot.Flags().String(OutPath, ".", `path to output rendered template`)
+	cmdRoot.Flags().StringArray(Set, []string{}, `set arguments overrides in format "arg=value", repeat for setting multiple arguments values`)
+	cmdRoot.Flags().String(Values, "", `path to arguments values file, could json or yaml`)
+	cmdRoot.Flags().Bool(NoInput, false, `do not request user input for missing arguments values`)
+	cmdRoot.Flags().Bool(ForceInput, false, `force user input requests even for noinput arguments`)
+	cmdRoot.Flags().Bool(NoOverwrites, false, `do not overwrite files with rendered from template`)
+	cmdRoot.Flags().StringArray(ExtraRoots, []string{}, `extra template root, repeat for setting multiple extra roots`)
+	cmdRoot.Flags().Bool(Verbose, false, `print more logging`)
 }
 
-var cmdNew = &cobra.Command{
+var cmdRoot = &cobra.Command{
 	Use:   "rendr <template-url> [flags]",
 	Short: "Render template",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		verbose, err := cmd.Flags().GetBool(Verbose)
+		failIfError(err, `Failed to get "%s" option`, Verbose)
+		if verbose {
+			console.Level = console.VerboseLevel
+		}
+
+		console.Verbose("Running rendr")
+
 		templateUrl := args[0]
 
 		blueprintPath, err := cmd.Flags().GetString(Blueprint)
@@ -70,16 +80,8 @@ var cmdNew = &cobra.Command{
 			inputMode = render.NoInputMode
 		}
 
-		var valuesData *values.ValuesData = nil
-		if valuesFilePath != "" {
-			data, err := ioutil.ReadFile(valuesFilePath)
-			failIfError(err, `Failed to read arguments file "%s"`, valuesFilePath)
-			valuesDataKind := values.JSON
-			if strings.HasSuffix(valuesFilePath, ".yaml") || strings.HasSuffix(valuesFilePath, ".yml") {
-				valuesDataKind = values.YAML
-			}
-			valuesData = &values.ValuesData{valuesDataKind, data}
-		}
+		valuesData, err := values.LoadValuesFile(valuesFilePath)
+		failIfError(err, `Failed to load values file "%s"`, valuesFilePath)
 
 		templateUrl = normalizeTemplateUrl(templateUrl)
 		err = renderTemplate(templateUrl, extraRoots, blueprintPath, outPath, inputMode, valuesData, overrides, !noOverwrites)
@@ -115,17 +117,13 @@ func renderTemplate(sourceUrl string, extraRoots []string, blueprintPath string,
 }
 
 func failIfError(err error, format string, args ...interface{}) {
+	console.Error(err, format, args...)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, format, args...)
-		fmt.Fprintf(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 }
 
 func Execute() {
-	println(`Running rendr`)
-	if err := cmdNew.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	err := cmdRoot.Execute()
+	failIfError(err, "Failed to run rendr tool")
 }
